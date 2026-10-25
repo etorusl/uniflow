@@ -35,10 +35,12 @@
     "pg-boss": "12.38.0",
     "reflect-metadata": "0.2.2",
     "rxjs": "7.8.2",
-    "zod": "4.6.7"
+    "zod": "4.6.7",
+    "luxon": "^3.7.2"
   },
   "devDependencies": {
     "@types/express": "5.0.6",
+    "@types/luxon": "^3.7.6",
     "@types/node": "24.19.2",
     "@types/nodemailer": "7.0.12",
     "@types/pg": "8.23.1",

@@ -16,10 +16,10 @@ export const openApiConfig = new DocumentBuilder()
   .addCookieAuth('uniflow_session')
   .addBearerAuth()
   .build();
-export async function createApi() {
+export async function createApi(options: { quiet?: boolean } = {}) {
   loadEnvironment();
   const app = await NestFactory.create(AppModule, {
-    logger: new Logger('API', { timestamp: true }),
+    logger: options.quiet ? false : new Logger('API', { timestamp: true }),
   });
   const env = app.get<Environment>(ENVIRONMENT);
   app.setGlobalPrefix('api/v1');

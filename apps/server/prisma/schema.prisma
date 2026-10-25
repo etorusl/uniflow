@@ -31,6 +31,10 @@ model User {
   updatedAt       DateTime      @updatedAt @db.Timestamptz(3)
   sessions        Session[]
   actionTokens    ActionToken[]
+  subjects        Subject[]
+  teachers        Teacher[]
+  semesters       Semester[]
+  scheduleEntries ScheduleEntry[]
 
   @@map("users")
 }
@@ -70,4 +74,81 @@ model AuthRateLimit {
 
   @@index([windowEndsAt])
   @@map("auth_rate_limits")
+}
+
+enum WeekParity {
+  ALL
+  EVEN
+  ODD
+}
+
+model Subject {
+  id      String @id @default(uuid()) @db.Uuid
+  userId  String @db.Uuid
+  name    String
+  color   String @default("#6554D9")
+  user    User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entries ScheduleEntry[]
+  @@index([userId, name])
+  @@map("subjects")
+}
+
+model Teacher {
+  id      String @id @default(uuid()) @db.Uuid
+  userId  String @db.Uuid
+  name    String
+  email   String?
+  phone   String?
+  notes   String?
+  user    User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entries ScheduleEntry[]
+  @@index([userId, name])
+  @@map("teachers")
+}
+
+model Semester {
+  id            String @id @default(uuid()) @db.Uuid
+  userId        String @db.Uuid
+  name          String
+  startDate     DateTime @db.Date
+  endDate       DateTime @db.Date
+  weekStartDate DateTime @db.Date
+  timeZone      String
+  user          User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entries       ScheduleEntry[]
+  @@index([userId, startDate])
+  @@map("semesters")
+}
+
+model ScheduleEntry {
+  id         String @id @default(uuid()) @db.Uuid
+  userId     String @db.Uuid
+  semesterId String @db.Uuid
+  subjectId  String @db.Uuid
+  teacherId  String? @db.Uuid
+  dayOfWeek  Int
+  startTime  String
+  endTime    String
+  parity     WeekParity @default(ALL)
+  room       String?
+  user       User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  semester   Semester @relation(fields: [semesterId], references: [id], onDelete: Cascade)
+  subject    Subject @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+  teacher    Teacher? @relation(fields: [teacherId], references: [id], onDelete: SetNull)
+  exceptions ScheduleException[]
+  @@index([userId, semesterId])
+  @@map("schedule_entries")
+}
+
+model ScheduleException {
+  id              String @id @default(uuid()) @db.Uuid
+  entryId         String @db.Uuid
+  originalDate    DateTime @db.Date
+  cancelled       Boolean
+  replacementDate DateTime? @db.Date
+  startTime       String?
+  endTime         String?
+  entry           ScheduleEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  @@unique([entryId, originalDate])
+  @@map("schedule_exceptions")
 }

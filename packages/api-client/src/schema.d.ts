@@ -150,6 +150,166 @@ export interface paths {
         patch: operations["UsersController_update"];
         trace?: never;
     };
+    "/api/v1/subjects": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["SubjectsController_list"];
+        put?: never;
+        post: operations["SubjectsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/subjects/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["SubjectsController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["SubjectsController_update"];
+        trace?: never;
+    };
+    "/api/v1/teachers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TeachersController_list"];
+        put?: never;
+        post: operations["TeachersController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/teachers/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["TeachersController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["TeachersController_update"];
+        trace?: never;
+    };
+    "/api/v1/schedule/entries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ScheduleController_list"];
+        put?: never;
+        post: operations["ScheduleController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/schedule/entries/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["ScheduleController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["ScheduleController_update"];
+        trace?: never;
+    };
+    "/api/v1/schedule/occurrences": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ScheduleController_occurrences"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/schedule/entries/{id}/exceptions/{date}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["ScheduleController_exception"];
+        post?: never;
+        delete: operations["ScheduleController_restore"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/semesters": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["SemestersController_list"];
+        put?: never;
+        post: operations["SemestersController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/semesters/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["SemestersController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["SemestersController_update"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -210,6 +370,134 @@ export interface components {
         };
         ProfileDto: {
             displayName: string;
+            timeZone: string;
+        };
+        SubjectDto: {
+            name: string;
+            /** @example #6554D9 */
+            color: string;
+            /** Format: uuid */
+            id: string;
+        };
+        SubjectsPageDto: {
+            items: components["schemas"]["SubjectDto"][];
+            total: number;
+        };
+        SubjectInputDto: {
+            name: string;
+            /** @example #6554D9 */
+            color: string;
+        };
+        TeacherDto: {
+            name: string;
+            email?: string | null;
+            phone?: string | null;
+            notes?: string | null;
+            /** Format: uuid */
+            id: string;
+        };
+        TeachersPageDto: {
+            items: components["schemas"]["TeacherDto"][];
+            total: number;
+        };
+        TeacherInputDto: {
+            name: string;
+            email?: string | null;
+            phone?: string | null;
+            notes?: string | null;
+        };
+        EntryDto: {
+            /** Format: uuid */
+            semesterId: string;
+            /** Format: uuid */
+            subjectId: string;
+            teacherId?: string | null;
+            dayOfWeek: number;
+            /** @example 09:00 */
+            startTime: string;
+            /** @example 10:30 */
+            endTime: string;
+            /** @enum {string} */
+            parity: "ALL" | "EVEN" | "ODD";
+            room?: string | null;
+            /** Format: uuid */
+            id: string;
+        };
+        EntriesPageDto: {
+            items: components["schemas"]["EntryDto"][];
+            total: number;
+        };
+        EntryInputDto: {
+            /** Format: uuid */
+            semesterId: string;
+            /** Format: uuid */
+            subjectId: string;
+            teacherId?: string | null;
+            dayOfWeek: number;
+            /** @example 09:00 */
+            startTime: string;
+            /** @example 10:30 */
+            endTime: string;
+            /** @enum {string} */
+            parity: "ALL" | "EVEN" | "ODD";
+            room?: string | null;
+        };
+        OccurrenceDto: {
+            id: string;
+            /** Format: uuid */
+            entryId: string;
+            /** Format: uuid */
+            semesterId: string;
+            subjectName: string;
+            color: string;
+            teacherName: string | null;
+            room: string | null;
+            /** Format: date */
+            originalDate: string;
+            /** Format: date */
+            date: string;
+            /** Format: date-time */
+            startsAt: string;
+            /** Format: date-time */
+            endsAt: string;
+            cancelled: boolean;
+            moved: boolean;
+            weekNumber: number;
+        };
+        OccurrencesDto: {
+            items: components["schemas"]["OccurrenceDto"][];
+        };
+        ExceptionInputDto: {
+            cancelled: boolean;
+            /** Format: date */
+            replacementDate?: string;
+            startTime?: string;
+            endTime?: string;
+        };
+        SemesterDto: {
+            name: string;
+            /** Format: date */
+            startDate: string;
+            /** Format: date */
+            endDate: string;
+            /** Format: date */
+            weekStartDate: string;
+            timeZone: string;
+            /** Format: uuid */
+            id: string;
+        };
+        SemestersPageDto: {
+            items: components["schemas"]["SemesterDto"][];
+            total: number;
+        };
+        SemesterInputDto: {
+            name: string;
+            /** Format: date */
+            startDate: string;
+            /** Format: date */
+            endDate: string;
+            /** Format: date */
+            weekStartDate: string;
             timeZone: string;
         };
     };
@@ -472,6 +760,428 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["UserDto"];
+                };
+            };
+        };
+    };
+    SubjectsController_list: {
+        parameters: {
+            query?: {
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubjectsPageDto"];
+                };
+            };
+        };
+    };
+    SubjectsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubjectInputDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubjectDto"];
+                };
+            };
+        };
+    };
+    SubjectsController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SubjectsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubjectInputDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubjectDto"];
+                };
+            };
+        };
+    };
+    TeachersController_list: {
+        parameters: {
+            query?: {
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TeachersPageDto"];
+                };
+            };
+        };
+    };
+    TeachersController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TeacherInputDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TeacherDto"];
+                };
+            };
+        };
+    };
+    TeachersController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TeachersController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TeacherInputDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TeacherDto"];
+                };
+            };
+        };
+    };
+    ScheduleController_list: {
+        parameters: {
+            query?: {
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntriesPageDto"];
+                };
+            };
+        };
+    };
+    ScheduleController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EntryInputDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntryDto"];
+                };
+            };
+        };
+    };
+    ScheduleController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ScheduleController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EntryInputDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntryDto"];
+                };
+            };
+        };
+    };
+    ScheduleController_occurrences: {
+        parameters: {
+            query: {
+                from: string;
+                to: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OccurrencesDto"];
+                };
+            };
+        };
+    };
+    ScheduleController_exception: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                date: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExceptionInputDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ScheduleController_restore: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                date: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SemestersController_list: {
+        parameters: {
+            query?: {
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SemestersPageDto"];
+                };
+            };
+        };
+    };
+    SemestersController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SemesterInputDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SemesterDto"];
+                };
+            };
+        };
+    };
+    SemestersController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SemestersController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SemesterInputDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SemesterDto"];
                 };
             };
         };

@@ -10,7 +10,7 @@ test(
   'API checks real services, errors follow the contract, and a separate worker executes jobs',
   { timeout: 60000 },
   async () => {
-    const app = await createApi();
+    const app = await createApi({ quiet: true });
     let worker;
     try {
       await app.init();

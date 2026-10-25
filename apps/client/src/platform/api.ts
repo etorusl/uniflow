@@ -30,3 +30,9 @@ export function errorMessage(error: unknown) {
     ? error.message
     : 'Не удалось связаться с UniFlow. Проверьте соединение.';
 }
+export function ensureSuccess(result: { response: Response; error?: unknown }) {
+  if (!result.response.ok) {
+    const error = result.error as { error?: { message?: string } } | undefined;
+    throw new Error(error?.error?.message ?? 'Не удалось сохранить изменения.');
+  }
+}

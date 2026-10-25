@@ -14,7 +14,7 @@ test(
   'accounts support immediate login, cookie CSRF, native sessions and single-use recovery',
   { timeout: 60000 },
   async () => {
-    const app = await createApi();
+    const app = await createApi({ quiet: true });
     let worker;
     const email = `accounts-${randomUUID()}@uniflow.local`;
     const password = 'Test-password-2026!';

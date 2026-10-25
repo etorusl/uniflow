@@ -1,5 +1,7 @@
 import { Text, View } from 'react-native';
-import { EmptyState, pageStyles } from '../shared/empty-state';
+import { pageStyles } from '../shared/empty-state';
+import { RequireSession } from '../features/auth/require-session';
+import { ScheduleWorkspace } from '../features/study/schedule-workspace';
 export default function ScheduleScreen() {
   return (
     <>
@@ -9,11 +11,9 @@ export default function ScheduleScreen() {
         </Text>
         <Text style={pageStyles.subtitle}>Учебная неделя без лишних сюрпризов.</Text>
       </View>
-      <EmptyState
-        title="Место для ваших пар"
-        description="Здесь будут занятия на семестр, чётные и нечётные недели, переносы и отмены."
-        symbol="▦"
-      />
+      <RequireSession>
+        <ScheduleWorkspace />
+      </RequireSession>
     </>
   );
 }

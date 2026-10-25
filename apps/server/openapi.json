@@ -321,6 +321,648 @@
           "Profile"
         ]
       }
+    },
+    "/api/v1/subjects": {
+      "get": {
+        "operationId": "SubjectsController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 100,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubjectsPageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Subjects"
+        ]
+      },
+      "post": {
+        "operationId": "SubjectsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubjectInputDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubjectDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Subjects"
+        ]
+      }
+    },
+    "/api/v1/subjects/{id}": {
+      "patch": {
+        "operationId": "SubjectsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubjectInputDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubjectDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Subjects"
+        ]
+      },
+      "delete": {
+        "operationId": "SubjectsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Subjects"
+        ]
+      }
+    },
+    "/api/v1/teachers": {
+      "get": {
+        "operationId": "TeachersController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 100,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeachersPageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Teachers"
+        ]
+      },
+      "post": {
+        "operationId": "TeachersController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TeacherInputDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeacherDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Teachers"
+        ]
+      }
+    },
+    "/api/v1/teachers/{id}": {
+      "patch": {
+        "operationId": "TeachersController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TeacherInputDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeacherDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Teachers"
+        ]
+      },
+      "delete": {
+        "operationId": "TeachersController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Teachers"
+        ]
+      }
+    },
+    "/api/v1/schedule/entries": {
+      "get": {
+        "operationId": "ScheduleController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 100,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntriesPageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Schedule"
+        ]
+      },
+      "post": {
+        "operationId": "ScheduleController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EntryInputDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntryDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Schedule"
+        ]
+      }
+    },
+    "/api/v1/schedule/entries/{id}": {
+      "patch": {
+        "operationId": "ScheduleController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EntryInputDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntryDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Schedule"
+        ]
+      },
+      "delete": {
+        "operationId": "ScheduleController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Schedule"
+        ]
+      }
+    },
+    "/api/v1/schedule/occurrences": {
+      "get": {
+        "operationId": "ScheduleController_occurrences",
+        "parameters": [
+          {
+            "name": "from",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "format": "date",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "format": "date",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OccurrencesDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Schedule"
+        ]
+      }
+    },
+    "/api/v1/schedule/entries/{id}/exceptions/{date}": {
+      "put": {
+        "operationId": "ScheduleController_exception",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "date",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExceptionInputDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Schedule"
+        ]
+      },
+      "delete": {
+        "operationId": "ScheduleController_restore",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "date",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Schedule"
+        ]
+      }
+    },
+    "/api/v1/semesters": {
+      "get": {
+        "operationId": "SemestersController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 100,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SemestersPageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Semesters"
+        ]
+      },
+      "post": {
+        "operationId": "SemestersController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SemesterInputDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SemesterDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Semesters"
+        ]
+      }
+    },
+    "/api/v1/semesters/{id}": {
+      "patch": {
+        "operationId": "SemestersController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SemesterInputDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SemesterDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Semesters"
+        ]
+      },
+      "delete": {
+        "operationId": "SemestersController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Semesters"
+        ]
+      }
     }
   },
   "info": {
@@ -544,6 +1186,442 @@
         },
         "required": [
           "displayName",
+          "timeZone"
+        ]
+      },
+      "SubjectDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string",
+            "example": "#6554D9"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "name",
+          "color",
+          "id"
+        ]
+      },
+      "SubjectsPageDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SubjectDto"
+            }
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "items",
+          "total"
+        ]
+      },
+      "SubjectInputDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string",
+            "example": "#6554D9"
+          }
+        },
+        "required": [
+          "name",
+          "color"
+        ]
+      },
+      "TeacherDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "name",
+          "id"
+        ]
+      },
+      "TeachersPageDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TeacherDto"
+            }
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "items",
+          "total"
+        ]
+      },
+      "TeacherInputDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "EntryDto": {
+        "type": "object",
+        "properties": {
+          "semesterId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "subjectId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "teacherId": {
+            "type": "string",
+            "nullable": true
+          },
+          "dayOfWeek": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 7
+          },
+          "startTime": {
+            "type": "string",
+            "example": "09:00"
+          },
+          "endTime": {
+            "type": "string",
+            "example": "10:30"
+          },
+          "parity": {
+            "type": "string",
+            "enum": [
+              "ALL",
+              "EVEN",
+              "ODD"
+            ]
+          },
+          "room": {
+            "type": "string",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "semesterId",
+          "subjectId",
+          "dayOfWeek",
+          "startTime",
+          "endTime",
+          "parity",
+          "id"
+        ]
+      },
+      "EntriesPageDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EntryDto"
+            }
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "items",
+          "total"
+        ]
+      },
+      "EntryInputDto": {
+        "type": "object",
+        "properties": {
+          "semesterId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "subjectId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "teacherId": {
+            "type": "string",
+            "nullable": true
+          },
+          "dayOfWeek": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 7
+          },
+          "startTime": {
+            "type": "string",
+            "example": "09:00"
+          },
+          "endTime": {
+            "type": "string",
+            "example": "10:30"
+          },
+          "parity": {
+            "type": "string",
+            "enum": [
+              "ALL",
+              "EVEN",
+              "ODD"
+            ]
+          },
+          "room": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "semesterId",
+          "subjectId",
+          "dayOfWeek",
+          "startTime",
+          "endTime",
+          "parity"
+        ]
+      },
+      "OccurrenceDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "entryId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "semesterId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "subjectName": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          },
+          "teacherName": {
+            "type": "string",
+            "nullable": true
+          },
+          "room": {
+            "type": "string",
+            "nullable": true
+          },
+          "originalDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "cancelled": {
+            "type": "boolean"
+          },
+          "moved": {
+            "type": "boolean"
+          },
+          "weekNumber": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "entryId",
+          "semesterId",
+          "subjectName",
+          "color",
+          "teacherName",
+          "room",
+          "originalDate",
+          "date",
+          "startsAt",
+          "endsAt",
+          "cancelled",
+          "moved",
+          "weekNumber"
+        ]
+      },
+      "OccurrencesDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OccurrenceDto"
+            }
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "ExceptionInputDto": {
+        "type": "object",
+        "properties": {
+          "cancelled": {
+            "type": "boolean"
+          },
+          "replacementDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "startTime": {
+            "type": "string"
+          },
+          "endTime": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "cancelled"
+        ]
+      },
+      "SemesterDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "weekStartDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "timeZone": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "name",
+          "startDate",
+          "endDate",
+          "weekStartDate",
+          "timeZone",
+          "id"
+        ]
+      },
+      "SemestersPageDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SemesterDto"
+            }
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "items",
+          "total"
+        ]
+      },
+      "SemesterInputDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "weekStartDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "timeZone": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "startDate",
+          "endDate",
+          "weekStartDate",
           "timeZone"
         ]
       }
