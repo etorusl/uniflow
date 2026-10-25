@@ -1,0 +1,12 @@
+node_modules
+pnpm-lock.yaml
+**/dist
+**/generated
+**/.expo
+apps/client/android
+apps/client/ios
+playwright-report
+test-results
+.local
+apps/server/openapi.json
+packages/api-client/src/schema.d.ts

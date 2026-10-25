@@ -1,0 +1,47 @@
+name: CI
+on:
+  push:
+    branches: [main, 'codex/**']
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.25.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm env:init
+      - run: pnpm infra:up
+      - run: pnpm build:server
+      - run: pnpm db:migrate
+      - run: pnpm storage:init
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm --filter @uniflow/server test
+      - run: pnpm --filter @uniflow/server test:integration
+      - run: pnpm api:check
+      - run: pnpm format:check
+      - run: pnpm build:web
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:e2e
+      - name: Upload browser traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-test-results
+          path: test-results/
+          retention-days: 7
+      - run: pnpm infra:down
+        if: always()

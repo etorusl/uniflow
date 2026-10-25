@@ -1,0 +1,10 @@
+{
+  "extends": "@uniflow/config/tsconfig/base",
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2023", "DOM"],
+    "noEmit": true
+  },
+  "include": ["src/**/*.ts"]
+}

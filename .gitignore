@@ -9,6 +9,8 @@ web-build/
 .expo/
 .cache/
 .turbo/
+.local/
+/apps/server/src/generated/
 *.tsbuildinfo
 
 # Expo native projects are generated from app config and config plugins.

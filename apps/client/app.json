@@ -1,0 +1,15 @@
+{
+  "expo": {
+    "name": "UniFlow",
+    "slug": "uniflow",
+    "scheme": "uniflow",
+    "version": "0.1.0",
+    "orientation": "default",
+    "userInterfaceStyle": "light",
+    "platforms": ["android", "web"],
+    "android": { "package": "com.uniflow.app" },
+    "web": { "bundler": "metro", "output": "static", "name": "UniFlow", "shortName": "UniFlow" },
+    "plugins": ["expo-router", "expo-dev-client"],
+    "experiments": { "typedRoutes": true }
+  }
+}

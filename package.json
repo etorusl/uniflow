@@ -1,0 +1,48 @@
+{
+  "name": "uniflow",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@11.25.0",
+  "engines": {
+    "node": ">=24.19.0 <25"
+  },
+  "scripts": {
+    "env:init": "node scripts/env-init.mjs",
+    "infra:up": "node scripts/compose.mjs up -d --wait",
+    "infra:down": "node scripts/compose.mjs down",
+    "infra:status": "node scripts/compose.mjs ps",
+    "infra:logs": "node scripts/compose.mjs logs --follow",
+    "infra:check": "node scripts/compose.mjs config --quiet",
+    "db:generate": "pnpm --filter @uniflow/server db:generate",
+    "db:migrate": "pnpm --filter @uniflow/server db:migrate",
+    "db:migrate:dev": "pnpm --filter @uniflow/server db:migrate:dev",
+    "storage:init": "pnpm --filter @uniflow/server storage:init",
+    "queue:probe": "pnpm --filter @uniflow/server queue:probe",
+    "api:generate": "node scripts/generate-api.mjs",
+    "api:check": "node scripts/generate-api.mjs --check",
+    "dev": "concurrently --kill-others -n server,web \"pnpm --filter @uniflow/server dev\" \"pnpm dev:web\"",
+    "dev:server": "pnpm --filter @uniflow/server dev",
+    "dev:web": "node scripts/client.mjs start --web --port 8081",
+    "dev:mobile": "node scripts/client.mjs start --dev-client",
+    "dev:android": "node scripts/client.mjs run:android",
+    "build:server": "pnpm --filter @uniflow/server build",
+    "build:web": "node scripts/client.mjs export --platform web",
+    "build": "pnpm build:server && pnpm build:web",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "pnpm build:server && pnpm --filter @uniflow/server test",
+    "test:integration": "pnpm build:server && pnpm --filter @uniflow/server test:integration",
+    "test:e2e": "playwright test",
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm api:check && pnpm format:check"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "@uniflow/config": "workspace:*",
+    "concurrently": "10.0.6",
+    "eslint": "10.13.0",
+    "prettier": "3.9.10",
+    "typescript": "6.0.3"
+  }
+}

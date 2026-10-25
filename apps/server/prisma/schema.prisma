@@ -1,0 +1,18 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Operational probe used by the internal CLI to verify the separate worker.
+model JobProbe {
+  id          String    @id @db.Uuid
+  createdAt   DateTime  @default(now()) @db.Timestamptz(3)
+  completedAt DateTime? @db.Timestamptz(3)
+
+  @@map("job_probes")
+}
