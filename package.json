@@ -33,6 +33,7 @@
     "android:emulator:stop": "node scripts/android-emulator.mjs stop",
     "android:open": "node scripts/android.mjs open",
     "android:close": "node scripts/android.mjs close",
+    "android:build:stop": "node scripts/android-build-stop.mjs",
     "build:server": "pnpm --filter @uniflow/server build",
     "build:web": "node scripts/client.mjs export --platform web",
     "build": "pnpm build:server && pnpm build:web",

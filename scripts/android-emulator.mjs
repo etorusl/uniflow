@@ -22,6 +22,10 @@ if (action === 'list') {
   console.log(avds.join('\n') || 'No AVDs. Create a virtual device in Android Studio.');
 } else if (action === 'stop') {
   const connected = devices();
+  if (connected.length === 0 && !env.ANDROID_SERIAL) {
+    console.log('No Android emulator is running.');
+    process.exit(0);
+  }
   const serial = env.ANDROID_SERIAL ?? (connected.length === 1 ? connected[0] : undefined);
   if (!serial || !connected.includes(serial))
     throw new Error('Select one running emulator with ANDROID_SERIAL. See pnpm android:devices.');
