@@ -14,7 +14,7 @@ const titles: Record<Mode, string> = {
   reset: 'Новый пароль',
 };
 export function AuthForm({ mode }: { mode: Mode }) {
-  const { login } = useAuth();
+  const { login, refresh } = useAuth();
   const params = useLocalSearchParams<{ token?: string }>();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -53,6 +53,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
           body: { token: params.token, password },
         });
         setMessage(resultData(result).message);
+        await refresh();
       }
     } catch (error) {
       setError(errorMessage(error));

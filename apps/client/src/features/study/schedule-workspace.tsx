@@ -22,6 +22,7 @@ import {
 } from './data';
 
 const days = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
+const shortDays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 const parities = [
   { value: 'ALL', label: 'Каждую неделю' },
   { value: 'EVEN', label: 'Чётные недели' },
@@ -308,7 +309,7 @@ export function ScheduleWorkspace() {
           {days.map((label, index) => (
             <Button
               key={label}
-              title={label.slice(0, 2)}
+              title={shortDays[index]!}
               secondary={day !== index}
               onPress={() => setDay(index)}
             />

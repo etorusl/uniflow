@@ -52,7 +52,7 @@ export function TodayDashboard() {
           Ваш день, {user?.displayName}
         </Text>
         <Text style={pageStyles.subtitle}>
-          {DateTime.now().setZone(zone).setLocale('ru').toFormat('cccc, d LLLL')} · Планы, которые
+          {DateTime.now().setZone(zone).setLocale('ru').toFormat('cccc, d MMMM')} · Планы, которые
           помогают двигаться вперёд.
         </Text>
       </View>

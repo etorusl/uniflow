@@ -19,6 +19,11 @@ export default defineConfig({
   ],
   webServer: [
     {
+      command: 'pnpm --filter @uniflow/server start:worker',
+      wait: { stdout: /Worker is ready/ },
+      timeout: 30000,
+    },
+    {
       command: 'pnpm --filter @uniflow/server start',
       url: 'http://127.0.0.1:3000/api/v1/health/live',
       reuseExistingServer: !process.env.CI,

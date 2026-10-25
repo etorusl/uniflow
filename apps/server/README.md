@@ -2,12 +2,12 @@
 
 Модульный монолит NestJS с PostgreSQL и Prisma. Два процесса используют одну кодовую базу: HTTP API (`src/main.ts`) и worker (`src/worker.ts`). Worker не запускает HTTP-сервер, а API не забирает работы из очереди.
 
-- `src/modules` — предметные модули. Реализованы `health` и `auth`/профиль; остальные добавляются по плану.
+- `src/modules` — предметные модули: `health`, `auth`/профиль, `catalog`, `schedule`, `tasks` и `statistics`; группы, вложения и уведомления добавляются по плану.
 - `src/infrastructure` — валидируемая конфигурация, Prisma, pg-boss, S3 и SMTP.
 - `src/common` — формат ошибок и общие серверные механизмы.
 - `src/cli` — генерация OpenAPI, создание закрытого бакета и проверка отдельного worker.
 - `prisma/` — схема и миграции. Внутренняя таблица `job_probes` проверяет очередь и не содержит пользовательских заданий; CLI удаляет свои записи после проверки.
-- `test/unit` — проверки конфигурации; `test/integration` — настоящие БД, хранилище, SMTP, HTTP и отдельный worker.
+- `test/unit` — проверки конфигурации, паролей, календарных правил и статусов заданий; `test/integration` — настоящие БД, хранилище, SMTP, HTTP, отдельный worker, права доступа и переходы состояний.
 
 Из корня: `pnpm build:server`, `pnpm dev:server`, `pnpm db:migrate`, `pnpm storage:init`, `pnpm queue:probe`. `pnpm api:generate` обновляет `openapi.json` и пакет API-клиента после сборки сервера.
 
