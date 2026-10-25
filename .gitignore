@@ -1,0 +1,51 @@
+# Dependencies and package-manager cache
+node_modules/
+.pnpm-store/
+
+# Build output and tool caches
+dist/
+build/
+web-build/
+.expo/
+.cache/
+.turbo/
+*.tsbuildinfo
+
+# Expo native projects are generated from app config and config plugins.
+/apps/client/ios/
+/apps/client/android/
+
+# Test output
+coverage/
+playwright-report/
+test-results/
+
+# Local environment and credentials; examples contain no secrets.
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+*.p12
+*.p8
+*.mobileprovision
+
+# Runtime data and local uploads
+/data/
+/uploads/
+/backups/
+/infra/data/
+*.sqlite
+*.sqlite-*
+*.db
+*.db-*
+*.log
+
+# Local OS/editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.example.json
