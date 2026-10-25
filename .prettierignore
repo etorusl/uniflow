@@ -10,3 +10,4 @@ test-results
 .local
 apps/server/openapi.json
 packages/api-client/src/schema.d.ts
+apps/client/expo-env.d.ts

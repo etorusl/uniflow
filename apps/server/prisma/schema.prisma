@@ -16,3 +16,58 @@ model JobProbe {
 
   @@map("job_probes")
 }
+
+enum ActionPurpose {
+  RESET_PASSWORD
+}
+
+model User {
+  id              String        @id @default(uuid()) @db.Uuid
+  email           String        @unique
+  passwordHash    String
+  displayName     String
+  timeZone        String        @default("UTC")
+  createdAt       DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime      @updatedAt @db.Timestamptz(3)
+  sessions        Session[]
+  actionTokens    ActionToken[]
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  tokenHash String   @unique
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  expiresAt DateTime @db.Timestamptz(3)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
+}
+
+model ActionToken {
+  id        String        @id @default(uuid()) @db.Uuid
+  userId    String        @db.Uuid
+  tokenHash String        @unique
+  purpose   ActionPurpose
+  createdAt DateTime      @default(now()) @db.Timestamptz(3)
+  expiresAt DateTime      @db.Timestamptz(3)
+  usedAt    DateTime?     @db.Timestamptz(3)
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, purpose])
+  @@index([expiresAt])
+  @@map("action_tokens")
+}
+
+model AuthRateLimit {
+  key          String   @id
+  count        Int
+  windowEndsAt DateTime @db.Timestamptz(3)
+
+  @@index([windowEndsAt])
+  @@map("auth_rate_limits")
+}

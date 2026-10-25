@@ -4,6 +4,7 @@ import { Pressable, Text, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppShell } from '../shared/app-shell';
 import { colors } from '../shared/theme';
+import { AuthProvider } from '../features/auth/auth-context';
 
 export function ErrorBoundary({ retry }: ErrorBoundaryProps) {
   return (
@@ -27,9 +28,11 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <StatusBar style="dark" />
-      <AppShell>
-        <Slot />
-      </AppShell>
+      <AuthProvider>
+        <AppShell>
+          <Slot />
+        </AppShell>
+      </AuthProvider>
     </SafeAreaProvider>
   );
 }

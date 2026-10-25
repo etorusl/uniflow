@@ -9,6 +9,8 @@ import { PgBoss } from 'pg-boss';
 import { ENVIRONMENT, type Environment } from './environment.js';
 
 export const PROBE_QUEUE = 'system.probe';
+export const AUTH_EMAIL_QUEUE = 'auth.email';
+export const CLEANUP_QUEUE = 'system.cleanup';
 @Injectable()
 export class JobsService implements OnModuleInit, OnModuleDestroy {
   readonly boss: PgBoss;
@@ -20,6 +22,8 @@ export class JobsService implements OnModuleInit, OnModuleDestroy {
   async onModuleInit() {
     await this.boss.start();
     await this.boss.createQueue(PROBE_QUEUE);
+    await this.boss.createQueue(AUTH_EMAIL_QUEUE);
+    await this.boss.createQueue(CLEANUP_QUEUE);
   }
   async onModuleDestroy() {
     await this.boss.stop({ graceful: true, timeout: 5000 });

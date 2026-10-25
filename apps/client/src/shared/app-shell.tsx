@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { api } from '../platform/api';
 import { colors } from './theme';
+import { useAuth } from '../features/auth/auth-context';
 
 const navigation = [
   { href: '/' as const, label: 'Сегодня', icon: '◷' },
@@ -20,6 +21,7 @@ const navigation = [
   { href: '/groups' as const, label: 'Группы', icon: '◎' },
 ];
 export function AppShell({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
   const wide = useWindowDimensions().width >= 900;
   const pathname = usePathname();
   const [connection, setConnection] = useState<'loading' | 'ready' | 'error'>('loading');
@@ -101,6 +103,12 @@ export function AppShell({ children }: { children: ReactNode }) {
                     : 'Нет соединения'}
               </Text>
             </View>
+            <Link
+              href={user ? '/profile' : '/login'}
+              style={{ color: colors.primary, fontWeight: '700', fontSize: 13 }}
+            >
+              {user ? user.displayName : 'Войти'}
+            </Link>
           </View>
           {connection === 'error' && (
             <View accessibilityRole="alert" style={styles.banner}>
