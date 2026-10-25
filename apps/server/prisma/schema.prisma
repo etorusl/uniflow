@@ -35,6 +35,7 @@ model User {
   teachers        Teacher[]
   semesters       Semester[]
   scheduleEntries ScheduleEntry[]
+  tasks           Task[]
 
   @@map("users")
 }
@@ -89,6 +90,7 @@ model Subject {
   color   String @default("#6554D9")
   user    User @relation(fields: [userId], references: [id], onDelete: Cascade)
   entries ScheduleEntry[]
+  tasks   Task[]
   @@index([userId, name])
   @@map("subjects")
 }
@@ -151,4 +153,40 @@ model ScheduleException {
   entry           ScheduleEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
   @@unique([entryId, originalDate])
   @@map("schedule_exceptions")
+}
+
+enum TaskEventKind {
+  COMPLETED
+  REOPENED
+}
+
+model Task {
+  id                   String @id @default(uuid()) @db.Uuid
+  userId               String @db.Uuid
+  subjectId            String? @db.Uuid
+  title                String
+  description          String @default("")
+  dueAt                DateTime @db.Timestamptz(3)
+  deadlineRevision     Int @default(1)
+  completedAt          DateTime? @db.Timestamptz(3)
+  deadlineAtCompletion DateTime? @db.Timestamptz(3)
+  createdAt            DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt            DateTime @updatedAt @db.Timestamptz(3)
+  user                 User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject              Subject? @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  history              TaskEvent[]
+  @@index([userId, dueAt, id])
+  @@index([userId, completedAt])
+  @@map("tasks")
+}
+
+model TaskEvent {
+  id               String @id @default(uuid()) @db.Uuid
+  taskId           String @db.Uuid
+  kind             TaskEventKind
+  createdAt        DateTime @default(now()) @db.Timestamptz(3)
+  deadlineSnapshot DateTime @db.Timestamptz(3)
+  task             Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  @@index([taskId, createdAt])
+  @@map("task_events")
 }

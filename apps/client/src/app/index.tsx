@@ -2,9 +2,13 @@ import { Link } from 'expo-router';
 import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { EmptyState, pageStyles } from '../shared/empty-state';
 import { colors } from '../shared/theme';
+import { useAuth } from '../features/auth/auth-context';
+import { TodayDashboard } from '../features/tasks/today-dashboard';
 
 export default function TodayScreen() {
+  const { user } = useAuth();
   const wide = useWindowDimensions().width >= 1100;
+  if (user) return <TodayDashboard />;
   return (
     <>
       <View>
@@ -20,9 +24,9 @@ export default function TodayScreen() {
           <Text style={styles.heroDescription}>
             UniFlow поможет собрать учебные планы в одном месте и двигаться к целям шаг за шагом.
           </Text>
-          <Link href="/schedule" asChild>
+          <Link href="/register" asChild>
             <Pressable style={styles.heroButton}>
-              <Text style={styles.heroButtonText}>Открыть расписание →</Text>
+              <Text style={styles.heroButtonText}>Начать планировать →</Text>
             </Pressable>
           </Link>
         </View>

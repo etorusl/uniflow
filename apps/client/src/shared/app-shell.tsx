@@ -29,7 +29,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     setConnection('loading');
     try {
       const response = await api.GET('/api/v1/health/ready', {
-        signal: signal ?? AbortSignal.timeout(8000),
+        signal,
       });
       if (!signal?.aborted) setConnection(response.response.ok ? 'ready' : 'error');
     } catch {
@@ -104,8 +104,15 @@ export function AppShell({ children }: { children: ReactNode }) {
               </Text>
             </View>
             <Link
+              numberOfLines={1}
               href={user ? '/profile' : '/login'}
-              style={{ color: colors.primary, fontWeight: '700', fontSize: 13 }}
+              style={{
+                color: colors.primary,
+                fontWeight: '700',
+                fontSize: 13,
+                flexShrink: 1,
+                maxWidth: 140,
+              }}
             >
               {user ? user.displayName : 'Войти'}
             </Link>
@@ -120,7 +127,10 @@ export function AppShell({ children }: { children: ReactNode }) {
               </Pressable>
             </View>
           )}
-          <ScrollView contentContainerStyle={[styles.content, !wide && styles.mobileContent]}>
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={[styles.content, !wide && styles.mobileContent]}
+          >
             {children}
           </ScrollView>
         </View>

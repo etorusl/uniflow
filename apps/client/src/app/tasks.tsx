@@ -1,5 +1,7 @@
 import { Text, View } from 'react-native';
-import { EmptyState, pageStyles } from '../shared/empty-state';
+import { pageStyles } from '../shared/empty-state';
+import { RequireSession } from '../features/auth/require-session';
+import { TasksWorkspace } from '../features/tasks/tasks-workspace';
 export default function TasksScreen() {
   return (
     <>
@@ -9,11 +11,9 @@ export default function TasksScreen() {
         </Text>
         <Text style={pageStyles.subtitle}>От первой заметки до последней галочки.</Text>
       </View>
-      <EmptyState
-        title="Ваши задачи будут здесь"
-        description="Дедлайны, вложения и отметки о выполнении помогут видеть следующий шаг."
-        symbol="☑"
-      />
+      <RequireSession>
+        <TasksWorkspace />
+      </RequireSession>
     </>
   );
 }

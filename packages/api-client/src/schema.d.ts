@@ -310,6 +310,102 @@ export interface paths {
         patch: operations["SemestersController_update"];
         trace?: never;
     };
+    "/api/v1/tasks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TasksController_list"];
+        put?: never;
+        post: operations["TasksController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tasks/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["TasksController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["TasksController_update"];
+        trace?: never;
+    };
+    "/api/v1/tasks/{id}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["TasksController_complete"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tasks/{id}/reopen": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["TasksController_reopen"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tasks/{id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TasksController_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/statistics/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["StatisticsController_statistics"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -499,6 +595,58 @@ export interface components {
             /** Format: date */
             weekStartDate: string;
             timeZone: string;
+        };
+        TaskDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            description: string;
+            /** Format: date-time */
+            dueAt: string;
+            deadlineRevision: number;
+            /** Format: uuid */
+            subjectId: string | null;
+            subjectName: string | null;
+            subjectColor: string | null;
+            /** Format: date-time */
+            completedAt: string | null;
+            /** Format: date-time */
+            deadlineAtCompletion: string | null;
+            /** @enum {string} */
+            status: "OPEN" | "OVERDUE" | "COMPLETED_ON_TIME" | "COMPLETED_LATE";
+        };
+        TasksPageDto: {
+            items: components["schemas"]["TaskDto"][];
+            total: number;
+        };
+        TaskInputDto: {
+            title: string;
+            description: string;
+            /** Format: date-time */
+            dueAt: string;
+            /** Format: uuid */
+            subjectId?: string | null;
+        };
+        TaskEventDto: {
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            kind: "COMPLETED" | "REOPENED";
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            deadlineSnapshot: string;
+        };
+        TaskHistoryDto: {
+            items: components["schemas"]["TaskEventDto"][];
+        };
+        StatisticsDto: {
+            total: number;
+            open: number;
+            completedOnTime: number;
+            completedLate: number;
+            overdue: number;
+            completionRate: number;
         };
     };
     responses: never;
@@ -1182,6 +1330,179 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SemesterDto"];
+                };
+            };
+        };
+    };
+    TasksController_list: {
+        parameters: {
+            query?: {
+                page?: number;
+                limit?: number;
+                status?: "ALL" | "OPEN" | "COMPLETED" | "OVERDUE";
+                subjectId?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TasksPageDto"];
+                };
+            };
+        };
+    };
+    TasksController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TaskInputDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaskDto"];
+                };
+            };
+        };
+    };
+    TasksController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TasksController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TaskInputDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaskDto"];
+                };
+            };
+        };
+    };
+    TasksController_complete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaskDto"];
+                };
+            };
+        };
+    };
+    TasksController_reopen: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaskDto"];
+                };
+            };
+        };
+    };
+    TasksController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaskHistoryDto"];
+                };
+            };
+        };
+    };
+    StatisticsController_statistics: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StatisticsDto"];
                 };
             };
         };
