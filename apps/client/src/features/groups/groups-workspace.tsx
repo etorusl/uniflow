@@ -8,6 +8,7 @@ import { Button, Field, Notice, formStyles } from '../../shared/forms';
 import { Dialog } from '../../shared/dialog';
 import { SelectField } from '../../shared/select-field';
 import { EmptyState, pageStyles } from '../../shared/empty-state';
+import { MaterialsWorkspace } from '../materials/materials-workspace';
 import { TasksWorkspace } from '../tasks/tasks-workspace';
 import { useAuth } from '../auth/auth-context';
 import { loadSubjects, type Subject } from '../study/data';
@@ -337,6 +338,7 @@ export function GroupsWorkspace() {
             <Pager page={membersPage} total={membersTotal} limit={20} setPage={setMembersPage} />
           </View>
           <TasksWorkspace group={selected} />
+          <MaterialsWorkspace groupId={selected.id} />
           {selected.role !== 'MEMBER' && (
             <View style={formStyles.card}>
               <Text style={pageStyles.heading}>Приглашения</Text>

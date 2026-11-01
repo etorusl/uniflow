@@ -36,7 +36,7 @@ export class ApiExceptionFilter implements ExceptionFilter {
     const body = exception instanceof HttpException ? exception.getResponse() : null;
     const description =
       databaseCode === 'P2003'
-        ? 'Запись используется в других данных. Сначала удалите связанные занятия.'
+        ? 'Запись используется в других данных. Сначала удалите или отвяжите связанные записи.'
         : databaseCode === 'P2002'
           ? 'Такая запись уже существует.'
           : databaseCode === 'P2025'

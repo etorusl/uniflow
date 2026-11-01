@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { createApi } from '../../dist/api.js';
+import { FilesService } from '../../dist/modules/files/files.service.js';
 import { DatabaseService } from '../../dist/infrastructure/database.service.js';
 
 export async function harness() {
@@ -42,6 +43,7 @@ export async function harness() {
     try {
       await db.group.deleteMany({ where: { ownerId: { in: users } } });
       await db.user.deleteMany({ where: { id: { in: users } } });
+      await app.get(FilesService).cleanup();
     } finally {
       await app.close();
     }

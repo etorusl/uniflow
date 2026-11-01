@@ -23,7 +23,7 @@ services:
       - -dir=/data
       - -ip=seaweedfs
       - -ip.bind=0.0.0.0
-      - -volume.max=4
+      - -volume.max=16
       - -master.volumeSizeLimitMB=128
       - -filer
       - -s3

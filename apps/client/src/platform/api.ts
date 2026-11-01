@@ -3,21 +3,26 @@ import { Platform } from 'react-native';
 import { readSessionToken } from './session-storage';
 
 export const api = createApiClient(process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000');
+export const uploadApi = createApiClient(
+  process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000',
+  { timeoutMs: 120_000 },
+);
 let csrf: string | undefined;
 export function setCsrfToken(token: string | undefined) {
   csrf = token;
 }
-api.use({
-  async onRequest({ request }) {
-    if (Platform.OS !== 'web') {
-      request.headers.set('x-uniflow-client', 'native');
-      const token = await readSessionToken();
-      if (token) request.headers.set('authorization', `Bearer ${token}`);
-    } else if (csrf && !['GET', 'HEAD', 'OPTIONS'].includes(request.method))
-      request.headers.set('x-csrf-token', csrf);
-    return request;
-  },
-});
+for (const client of [api, uploadApi])
+  client.use({
+    async onRequest({ request }) {
+      if (Platform.OS !== 'web') {
+        request.headers.set('x-uniflow-client', 'native');
+        const token = await readSessionToken();
+        if (token) request.headers.set('authorization', `Bearer ${token}`);
+      } else if (csrf && !['GET', 'HEAD', 'OPTIONS'].includes(request.method))
+        request.headers.set('x-csrf-token', csrf);
+      return request;
+    },
+  });
 export function resultData<T>(result: { data?: T; error?: unknown; response: Response }): T {
   if (!result.response.ok || !result.data) {
     const error = result.error as { error?: { message?: string } } | undefined;

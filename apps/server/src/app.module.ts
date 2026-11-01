@@ -6,6 +6,8 @@ import { CatalogModule } from './modules/catalog/catalog.module.js';
 import { ScheduleModule } from './modules/schedule/schedule.module.js';
 import { TasksModule } from './modules/tasks/tasks.module.js';
 import { StatisticsModule } from './modules/statistics/statistics.module.js';
+import { FilesModule } from './modules/files/files.module.js';
+import { MaterialsModule } from './modules/materials/materials.module.js';
 import { GroupsModule } from './modules/groups/groups.module.js';
 
 @Module({
@@ -17,6 +19,8 @@ import { GroupsModule } from './modules/groups/groups.module.js';
     TasksModule,
     StatisticsModule,
     GroupsModule,
+    FilesModule,
+    MaterialsModule,
   ],
   controllers: [HealthController],
 })

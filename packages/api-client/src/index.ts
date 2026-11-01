@@ -1,7 +1,7 @@
 import createClient from 'openapi-fetch';
 import type { paths } from './schema.js';
 
-export function createApiClient(baseUrl: string) {
+export function createApiClient(baseUrl: string, options: { timeoutMs?: number } = {}) {
   return createClient<paths>({
     baseUrl: baseUrl.replace(/\/$/, ''),
     credentials: 'include',
@@ -10,7 +10,7 @@ export function createApiClient(baseUrl: string) {
       const abort = () => controller.abort();
       if (request.signal?.aborted) abort();
       else request.signal?.addEventListener('abort', abort, { once: true });
-      const timer = setTimeout(abort, 20_000);
+      const timer = setTimeout(abort, options.timeoutMs ?? 20_000);
       try {
         return await fetch(request, { signal: controller.signal });
       } finally {

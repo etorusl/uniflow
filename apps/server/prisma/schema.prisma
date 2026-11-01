@@ -180,6 +180,7 @@ model Task {
   user                 User @relation(fields: [userId], references: [id], onDelete: Cascade)
   subject              Subject? @relation(fields: [subjectId], references: [id], onDelete: SetNull)
   history              TaskEvent[]
+  attachments          Attachment[]
   @@index([userId, dueAt, id])
   @@index([userId, completedAt])
   @@map("tasks")
@@ -214,6 +215,8 @@ model Group {
   invitations GroupInvitation[]
   audit       GroupAudit[]
   tasks       GroupTask[]
+  materials   Material[]
+  attachments Attachment[]
   @@map("groups")
 }
 
@@ -287,6 +290,7 @@ model GroupTask {
   author               User @relation(fields: [authorId], references: [id], onDelete: Restrict)
   completions          GroupCompletion[]
   history              GroupTaskEvent[]
+  attachments          Attachment[]
   @@index([groupId, deletedAt, dueAt, id])
   @@map("group_tasks")
 }
@@ -315,4 +319,54 @@ model GroupTaskEvent {
   task             GroupTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
   @@index([taskId, recipientId, createdAt, id])
   @@map("group_task_events")
+}
+
+
+model Material {
+  id        String @id @default(uuid()) @db.Uuid
+  groupId   String @db.Uuid
+  authorId  String @db.Uuid
+  title     String
+  body      String
+  version   Int @default(1)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+  deletedAt DateTime? @db.Timestamptz(3)
+  group     Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  attachments Attachment[]
+  @@index([groupId, deletedAt, createdAt, id])
+  @@map("materials")
+}
+
+enum AttachmentStatus {
+  PENDING
+  READY
+  DELETING
+}
+
+model Attachment {
+  id             String @id @default(uuid()) @db.Uuid
+  uploaderId     String @db.Uuid
+  groupId        String? @db.Uuid
+  personalTaskId String? @db.Uuid
+  groupTaskId    String? @db.Uuid
+  materialId     String? @db.Uuid
+  objectKey      String @unique
+  filename       String
+  mimeType       String
+  byteSize       Int
+  status         AttachmentStatus @default(PENDING)
+  createdAt      DateTime @default(now()) @db.Timestamptz(3)
+  expiresAt      DateTime @db.Timestamptz(3)
+  group          Group? @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  personalTask   Task? @relation(fields: [personalTaskId], references: [id], onDelete: SetNull)
+  groupTask      GroupTask? @relation(fields: [groupTaskId], references: [id], onDelete: SetNull)
+  material       Material? @relation(fields: [materialId], references: [id], onDelete: SetNull)
+  @@index([personalTaskId, status])
+  @@index([groupTaskId, status])
+  @@index([materialId, status])
+  @@index([uploaderId, status])
+  @@index([groupId, status])
+  @@index([status, expiresAt])
+  @@map("attachments")
 }

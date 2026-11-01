@@ -10,6 +10,7 @@ import { Button, Field, Notice, formStyles } from '../../shared/forms';
 import { Dialog } from '../../shared/dialog';
 import { SelectField } from '../../shared/select-field';
 import { EmptyState, pageStyles } from '../../shared/empty-state';
+import { Attachments } from '../files/attachments';
 import { Link } from 'expo-router';
 import { Pager } from '../../shared/pager';
 import { colors } from '../../shared/theme';
@@ -367,6 +368,12 @@ export function TasksWorkspace({ group }: { group?: components['schemas']['Group
                   .toFormat('d LLL, HH:mm')}
               </Text>
             )}
+            <Attachments
+              parentType={task.scope === 'GROUP' ? 'GROUP_TASK' : 'PERSONAL_TASK'}
+              parentId={task.id}
+              canUpload={task.canEdit}
+              canDelete={task.canDelete}
+            />
             <View style={formStyles.row}>
               <Button
                 title={task.completedAt ? 'Вернуть в работу' : 'Выполнить'}

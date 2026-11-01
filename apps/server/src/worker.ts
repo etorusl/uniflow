@@ -10,11 +10,14 @@ import {
   AUTH_EMAIL_QUEUE,
   CLEANUP_QUEUE,
 } from './infrastructure/jobs.service.js';
+import { FilesModule } from './modules/files/files.module.js';
+import { FilesService } from './modules/files/files.service.js';
+import { FILE_CLEANUP_QUEUE } from './infrastructure/jobs.service.js';
 import { AuthModule } from './modules/auth/auth.module.js';
 import { AuthMailService, type AuthEmailJob } from './modules/auth/auth-mail.service.js';
 
 loadEnvironment();
-@Module({ imports: [InfrastructureModule, AuthModule] })
+@Module({ imports: [InfrastructureModule, AuthModule, FilesModule] })
 class WorkerModule {}
 const app = await NestFactory.createApplicationContext(WorkerModule);
 app.enableShutdownHooks();
@@ -36,4 +39,8 @@ await app.get(JobsService).boss.work(CLEANUP_QUEUE, async () => {
   await db.authRateLimit.deleteMany({ where: { windowEndsAt: { lt: now } } });
 });
 await app.get(JobsService).boss.schedule(CLEANUP_QUEUE, '0 3 * * *');
+await app.get(JobsService).boss.work(FILE_CLEANUP_QUEUE, async () => {
+  await app.get(FilesService).cleanup();
+});
+await app.get(JobsService).boss.schedule(FILE_CLEANUP_QUEUE, '*/5 * * * *');
 Logger.log('Worker is ready; no HTTP server is started.', 'Worker');
