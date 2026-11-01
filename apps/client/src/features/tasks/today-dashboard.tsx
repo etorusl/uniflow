@@ -27,7 +27,9 @@ export function TodayDashboard() {
       const [a, b, c] = await Promise.all([
         api.GET('/api/v1/statistics/me').then(resultData),
         api
-          .GET('/api/v1/tasks', { params: { query: { status: 'OPEN', page: 1, limit: 4 } } })
+          .GET('/api/v1/tasks', {
+            params: { query: { status: 'OPEN', scope: 'ALL', page: 1, limit: 4 } },
+          })
           .then(resultData),
         api
           .GET('/api/v1/schedule/occurrences', { params: { query: { from: date, to: date } } })
@@ -137,6 +139,7 @@ export function TodayDashboard() {
                         .setLocale('ru')
                         .toFormat('d LLL, HH:mm')}{' '}
                       · {task.subjectName ?? 'Без предмета'}
+                      {task.groupName ? ` · ${task.groupName}` : ' · Личное'}
                     </Text>
                   </Pressable>
                 </Link>

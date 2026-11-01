@@ -38,6 +38,8 @@ model User {
   tasks           Task[]
   ownedGroups     Group[]
   memberships     GroupMember[]
+  groupTasks      GroupTask[]
+  groupCompletions GroupCompletion[]
 
   @@map("users")
 }
@@ -211,6 +213,7 @@ model Group {
   members     GroupMember[]
   invitations GroupInvitation[]
   audit       GroupAudit[]
+  tasks       GroupTask[]
   @@map("groups")
 }
 
@@ -256,4 +259,60 @@ model GroupAudit {
   group     Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
   @@index([groupId, createdAt, id])
   @@map("group_audit")
+}
+
+
+enum GroupTaskMode {
+  INDIVIDUAL
+  SHARED
+}
+
+model GroupTask {
+  id                   String @id @default(uuid()) @db.Uuid
+  groupId              String @db.Uuid
+  authorId             String @db.Uuid
+  mode                 GroupTaskMode
+  title                String
+  description          String @default("")
+  dueAt                DateTime @db.Timestamptz(3)
+  deadlineRevision     Int @default(1)
+  version              Int @default(1)
+  completedAt          DateTime? @db.Timestamptz(3)
+  deadlineAtCompletion DateTime? @db.Timestamptz(3)
+  completedBy          String? @db.Uuid
+  createdAt            DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt            DateTime @updatedAt @db.Timestamptz(3)
+  deletedAt            DateTime? @db.Timestamptz(3)
+  group                Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  author               User @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  completions          GroupCompletion[]
+  history              GroupTaskEvent[]
+  @@index([groupId, deletedAt, dueAt, id])
+  @@map("group_tasks")
+}
+
+model GroupCompletion {
+  id                   String @id @default(uuid()) @db.Uuid
+  taskId               String @db.Uuid
+  userId               String @db.Uuid
+  completedAt          DateTime? @db.Timestamptz(3)
+  deadlineAtCompletion DateTime? @db.Timestamptz(3)
+  task                 GroupTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user                 User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([taskId, userId])
+  @@index([userId, completedAt])
+  @@map("group_completions")
+}
+
+model GroupTaskEvent {
+  id               String @id @default(uuid()) @db.Uuid
+  taskId           String @db.Uuid
+  actorId          String @db.Uuid
+  recipientId      String? @db.Uuid
+  kind             TaskEventKind
+  createdAt        DateTime @default(now()) @db.Timestamptz(3)
+  deadlineSnapshot DateTime @db.Timestamptz(3)
+  task             GroupTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  @@index([taskId, recipientId, createdAt, id])
+  @@map("group_task_events")
 }

@@ -10,6 +10,8 @@ import { Button, Field, Notice, formStyles } from '../../shared/forms';
 import { Dialog } from '../../shared/dialog';
 import { SelectField } from '../../shared/select-field';
 import { EmptyState, pageStyles } from '../../shared/empty-state';
+import { Link } from 'expo-router';
+import { Pager } from '../../shared/pager';
 import { colors } from '../../shared/theme';
 import { StatisticsCards, type Statistics } from './statistics-cards';
 
@@ -22,7 +24,7 @@ const statusLabels: Record<Task['status'], string> = {
   COMPLETED_ON_TIME: 'Выполнено вовремя',
   COMPLETED_LATE: 'Выполнено с опозданием',
 };
-export function TasksWorkspace() {
+export function TasksWorkspace({ group }: { group?: components['schemas']['GroupDto'] }) {
   const { user } = useAuth();
   const zone = user?.timeZone ?? 'UTC';
   const params = useLocalSearchParams<{ create?: string }>();
@@ -37,9 +39,16 @@ export function TasksWorkspace() {
     [busy, setBusy] = useState(false),
     [error, setError] = useState(''),
     [message, setMessage] = useState('');
-  const [editor, setEditor] = useState<{ id?: string } | null>(null),
+  const [editor, setEditor] = useState<{ id?: string; task?: Task } | null>(null),
     [remove, setRemove] = useState<Task | null>(null),
-    [history, setHistory] = useState<{ title: string; items: Event[] } | null>(null);
+    [history, setHistory] = useState<{
+      task: Task;
+      items: Event[];
+      page: number;
+      total: number;
+    } | null>(null);
+  const [scope, setScope] = useState<'ALL' | 'PERSONAL' | 'GROUP'>('ALL');
+  const [mode, setMode] = useState<'INDIVIDUAL' | 'SHARED'>('INDIVIDUAL');
   const [title, setTitle] = useState(''),
     [description, setDescription] = useState(''),
     [subjectId, setSubjectId] = useState(''),
@@ -51,14 +60,28 @@ export function TasksWorkspace() {
     try {
       const [a, b, c] = await Promise.all([
         loadSubjects(),
-        api
-          .GET('/api/v1/tasks', {
-            params: {
-              query: { status: filter, subjectId: subjectFilter || undefined, page, limit: 20 },
-            },
-          })
-          .then(resultData),
-        api.GET('/api/v1/statistics/me').then(resultData),
+        (group
+          ? api.GET('/api/v1/groups/{groupId}/tasks', {
+              params: { path: { groupId: group.id }, query: { status: filter, page, limit: 20 } },
+            })
+          : api.GET('/api/v1/tasks', {
+              params: {
+                query: {
+                  status: filter,
+                  scope,
+                  subjectId: subjectFilter || undefined,
+                  page,
+                  limit: 20,
+                },
+              },
+            })
+        ).then(resultData),
+        (group
+          ? api.GET('/api/v1/groups/{groupId}/statistics', {
+              params: { path: { groupId: group.id } },
+            })
+          : api.GET('/api/v1/statistics/me')
+        ).then(resultData),
       ]);
       setSubjects(a);
       setItems(b.items);
@@ -69,7 +92,7 @@ export function TasksWorkspace() {
     } finally {
       setLoading(false);
     }
-  }, [filter, subjectFilter, page]);
+  }, [filter, subjectFilter, page, scope, group]);
   useEffect(() => {
     void reload();
   }, [reload]);
@@ -83,7 +106,8 @@ export function TasksWorkspace() {
       setSubjectId(task?.subjectId ?? '');
       setDueDate(due.toISODate()!);
       setDueTime(due.toFormat('HH:mm'));
-      setEditor({ id: task?.id });
+      setEditor({ id: task?.id, task });
+      setMode(task?.mode ?? 'INDIVIDUAL');
       setError('');
       setMessage('');
     },
@@ -134,12 +158,22 @@ export function TasksWorkspace() {
         await mutate(
           async () =>
             ensureSuccess(
-              editor.id
-                ? await api.PATCH('/api/v1/tasks/{id}', {
-                    params: { path: { id: editor.id } },
-                    body,
+              editor.task?.groupId
+                ? await api.PATCH('/api/v1/groups/{groupId}/tasks/{id}', {
+                    params: { path: { groupId: editor.task.groupId, id: editor.task.id } },
+                    body: { title, description, dueAt: body.dueAt, version: editor.task.version },
                   })
-                : await api.POST('/api/v1/tasks', { body }),
+                : editor.id
+                  ? await api.PATCH('/api/v1/tasks/{id}', {
+                      params: { path: { id: editor.id } },
+                      body,
+                    })
+                  : group
+                    ? await api.POST('/api/v1/groups/{groupId}/tasks', {
+                        params: { path: { groupId: group.id } },
+                        body: { title, description, dueAt: body.dueAt, mode },
+                      })
+                    : await api.POST('/api/v1/tasks', { body }),
             ),
           'Задание сохранено.',
         )
@@ -152,18 +186,34 @@ export function TasksWorkspace() {
   async function toggle(task: Task) {
     const path = task.completedAt ? '/api/v1/tasks/{id}/reopen' : '/api/v1/tasks/{id}/complete';
     await mutate(
-      async () => ensureSuccess(await api.POST(path, { params: { path: { id: task.id } } })),
+      async () =>
+        ensureSuccess(
+          task.groupId
+            ? await api.POST(
+                task.completedAt
+                  ? '/api/v1/groups/{groupId}/tasks/{id}/reopen'
+                  : '/api/v1/groups/{groupId}/tasks/{id}/complete',
+                { params: { path: { groupId: task.groupId, id: task.id } } },
+              )
+            : await api.POST(path, { params: { path: { id: task.id } } }),
+        ),
       task.completedAt ? 'Задание возвращено в работу.' : 'Задание выполнено.',
     );
   }
-  async function showHistory(task: Task) {
+  async function showHistory(task: Task, page = 1) {
     setBusy(true);
     setError('');
     try {
       const data = resultData(
-        await api.GET('/api/v1/tasks/{id}/history', { params: { path: { id: task.id } } }),
+        task.groupId
+          ? await api.GET('/api/v1/groups/{groupId}/tasks/{id}/history', {
+              params: { path: { groupId: task.groupId, id: task.id }, query: { page, limit: 20 } },
+            })
+          : await api.GET('/api/v1/tasks/{id}/history', {
+              params: { path: { id: task.id }, query: { page, limit: 20 } },
+            }),
       );
-      setHistory({ title: task.title, items: data.items });
+      setHistory({ task, items: data.items, total: data.total, page });
     } catch (error) {
       setError(errorMessage(error));
     } finally {
@@ -176,7 +226,11 @@ export function TasksWorkspace() {
       (await mutate(
         async () =>
           ensureSuccess(
-            await api.DELETE('/api/v1/tasks/{id}', { params: { path: { id: remove.id } } }),
+            remove.groupId
+              ? await api.DELETE('/api/v1/groups/{groupId}/tasks/{id}', {
+                  params: { path: { groupId: remove.groupId, id: remove.id } },
+                })
+              : await api.DELETE('/api/v1/tasks/{id}', { params: { path: { id: remove.id } } }),
           ),
         'Задание удалено.',
       ))
@@ -185,6 +239,12 @@ export function TasksWorkspace() {
   }
   return (
     <>
+      <Text style={pageStyles.heading}>{group ? 'Общий прогресс группы' : 'Личный прогресс'}</Text>
+      <Text style={formStyles.muted}>
+        {group
+          ? 'Только общие задания. Индивидуальные отметки учитываются в личном прогрессе каждого.'
+          : 'Личные задания и индивидуальные задания действующих групп. Общие результаты группы считаются отдельно.'}
+      </Text>
       {statistics && <StatisticsCards value={statistics} />}
       <View style={formStyles.row}>
         <Button title="Добавить задание" onPress={() => edit()} />
@@ -207,18 +267,35 @@ export function TasksWorkspace() {
           />
         ))}
       </View>
-      <SelectField
-        label="Фильтр по предмету"
-        value={subjectFilter}
-        onChange={(value) => {
-          setPage(1);
-          setSubjectFilter(value);
-        }}
-        options={[
-          { value: '', label: 'Все предметы' },
-          ...subjects.map((value) => ({ value: value.id, label: value.name })),
-        ]}
-      />
+      {!group && (
+        <SelectField
+          label="Область заданий"
+          value={scope}
+          onChange={(value) => {
+            setScope(value as typeof scope);
+            setPage(1);
+          }}
+          options={[
+            { value: 'ALL', label: 'Личные и групповые' },
+            { value: 'PERSONAL', label: 'Только личные' },
+            { value: 'GROUP', label: 'Только групповые' },
+          ]}
+        />
+      )}
+      {!group && (
+        <SelectField
+          label="Фильтр по предмету"
+          value={subjectFilter}
+          onChange={(value) => {
+            setPage(1);
+            setSubjectFilter(value);
+          }}
+          options={[
+            { value: '', label: 'Все предметы' },
+            ...subjects.map((value) => ({ value: value.id, label: value.name })),
+          ]}
+        />
+      )}
       {!!error && !editor && !remove && <Notice message={error} />}
       {!!message && <Notice message={message} success />}
       {loading ? (
@@ -259,6 +336,19 @@ export function TasksWorkspace() {
               </Text>
             </View>
             <Text style={formStyles.muted}>
+              {task.scope === 'PERSONAL'
+                ? 'Личное задание'
+                : `${task.groupName} · ${task.mode === 'SHARED' ? 'Общее выполнение' : 'Ваше индивидуальное выполнение'}`}
+            </Text>
+            {task.groupId && !group && (
+              <Link
+                href={{ pathname: '/groups', params: { group: task.groupId } }}
+                style={formStyles.link}
+              >
+                Открыть группу
+              </Link>
+            )}
+            <Text style={formStyles.muted}>
               {task.subjectName ?? 'Без предмета'} · до{' '}
               {DateTime.fromISO(task.dueAt)
                 .setZone(zone)
@@ -281,9 +371,15 @@ export function TasksWorkspace() {
               <Button
                 title={task.completedAt ? 'Вернуть в работу' : 'Выполнить'}
                 busy={busy}
+                disabled={!task.canComplete}
                 onPress={() => void toggle(task)}
               />
-              <Button secondary title="Изменить" disabled={busy} onPress={() => edit(task)} />
+              <Button
+                secondary
+                title="Изменить"
+                disabled={busy || !task.canEdit}
+                onPress={() => edit(task)}
+              />
               <Button
                 secondary
                 title="История"
@@ -293,7 +389,7 @@ export function TasksWorkspace() {
               <Button
                 secondary
                 title="Удалить"
-                disabled={busy}
+                disabled={busy || !task.canDelete}
                 onPress={() => {
                   setRemove(task);
                   setError('');
@@ -341,15 +437,33 @@ export function TasksWorkspace() {
           multiline
           maxLength={5000}
         />
-        <SelectField
-          label="Предмет задания"
-          value={subjectId}
-          onChange={setSubjectId}
-          options={[
-            { value: '', label: 'Без предмета' },
-            ...subjects.map((value) => ({ value: value.id, label: value.name })),
-          ]}
-        />
+        {!group && !editor?.task?.groupId && (
+          <SelectField
+            label="Предмет задания"
+            value={subjectId}
+            onChange={setSubjectId}
+            options={[
+              { value: '', label: 'Без предмета' },
+              ...subjects.map((value) => ({ value: value.id, label: value.name })),
+            ]}
+          />
+        )}
+        {group && !editor?.id && (
+          <SelectField
+            label="Режим выполнения"
+            value={mode}
+            onChange={(value) => setMode(value as typeof mode)}
+            options={[
+              { value: 'INDIVIDUAL', label: 'Каждый выполняет за себя' },
+              { value: 'SHARED', label: 'Общее выполнение группы' },
+            ]}
+          />
+        )}
+        {(group || editor?.task?.groupId) && (
+          <Text style={formStyles.muted}>
+            Режим выбирается при создании. Личные предметы участников не публикуются.
+          </Text>
+        )}
         <Field label="Дата дедлайна (ГГГГ-ММ-ДД)" value={dueDate} onChangeText={setDueDate} />
         <Field label="Время дедлайна (ЧЧ:ММ)" value={dueTime} onChangeText={setDueTime} />
         <Text style={formStyles.muted}>Часовой пояс: {zone}. Изменить его можно в профиле.</Text>
@@ -369,7 +483,7 @@ export function TasksWorkspace() {
         />
       </Dialog>
       <Dialog visible={!!history} title="История выполнения" onClose={() => setHistory(null)}>
-        <Text style={pageStyles.heading}>{history?.title}</Text>
+        <Text style={pageStyles.heading}>{history?.task.title}</Text>
         {history?.items.length ? (
           history.items.map((event) => (
             <View key={event.id} style={{ gap: 5 }}>
@@ -393,6 +507,14 @@ export function TasksWorkspace() {
           ))
         ) : (
           <Text style={formStyles.muted}>Отметок выполнения пока нет.</Text>
+        )}
+        {history && (
+          <Pager
+            page={history.page}
+            total={history.total}
+            limit={20}
+            setPage={(value) => void showHistory(history.task, value)}
+          />
         )}
       </Dialog>
     </>

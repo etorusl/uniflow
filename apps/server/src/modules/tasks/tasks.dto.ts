@@ -37,8 +37,22 @@ export class TasksQueryDto extends PaginationDto {
   @IsIn(['ALL', 'OPEN', 'COMPLETED', 'OVERDUE'])
   status: 'ALL' | 'OPEN' | 'COMPLETED' | 'OVERDUE' = 'OPEN';
   @ApiPropertyOptional({ type: String, format: 'uuid' }) @IsOptional() @IsUUID() subjectId?: string;
+  @ApiPropertyOptional({ enum: ['PERSONAL', 'GROUP', 'ALL'], type: String, default: 'PERSONAL' })
+  @IsIn(['PERSONAL', 'GROUP', 'ALL'])
+  scope: 'PERSONAL' | 'GROUP' | 'ALL' = 'PERSONAL';
+  @ApiPropertyOptional({ type: String, format: 'uuid' }) @IsOptional() @IsUUID() groupId?: string;
 }
 export class TaskDto {
+  @ApiProperty({ enum: ['PERSONAL', 'GROUP'] }) scope!: 'PERSONAL' | 'GROUP';
+  @ApiProperty({ type: String, nullable: true, format: 'uuid' }) groupId!: string | null;
+  @ApiProperty({ type: String, nullable: true }) groupName!: string | null;
+  @ApiProperty({ type: String, nullable: true, enum: ['INDIVIDUAL', 'SHARED'] }) mode!:
+    'INDIVIDUAL' | 'SHARED' | null;
+  @ApiProperty({ format: 'uuid' }) authorId!: string;
+  @ApiProperty() version!: number;
+  @ApiProperty() canEdit!: boolean;
+  @ApiProperty() canDelete!: boolean;
+  @ApiProperty() canComplete!: boolean;
   @ApiProperty({ format: 'uuid' }) id!: string;
   @ApiProperty() title!: string;
   @ApiProperty() description!: string;
@@ -64,6 +78,7 @@ export class TaskEventDto {
   @ApiProperty({ format: 'date-time' }) deadlineSnapshot!: string;
 }
 export class TaskHistoryDto {
+  @ApiProperty() total!: number;
   @ApiProperty({ type: [TaskEventDto] }) items!: TaskEventDto[];
 }
 export class StatisticsDto {

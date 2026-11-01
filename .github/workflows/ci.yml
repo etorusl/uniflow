@@ -30,12 +30,12 @@ jobs:
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm --filter @uniflow/server test
-      - run: pnpm --filter @uniflow/server test:integration
+      - run: node scripts/test-environment.mjs integration
       - run: pnpm api:check
       - run: pnpm format:check
       - run: pnpm build:web
       - run: pnpm exec playwright install --with-deps chromium
-      - run: pnpm test:e2e
+      - run: node scripts/test-environment.mjs e2e
       - name: Upload browser traces
         if: failure()
         uses: actions/upload-artifact@v4

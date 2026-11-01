@@ -16,6 +16,7 @@ import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { CurrentUser, SessionGuard } from '../auth/session.guard.js';
 import { UserDto } from '../auth/auth.dto.js';
 import { TaskDto, TaskHistoryDto, TaskInputDto, TasksPageDto, TasksQueryDto } from './tasks.dto.js';
+import { PaginationDto } from '../../common/pagination.dto.js';
 import { TasksService } from './tasks.service.js';
 
 @ApiTags('Tasks')
@@ -63,7 +64,8 @@ export class TasksController {
   @Get(':id/history') @ApiOkResponse({ type: TaskHistoryDto }) history(
     @CurrentUser() user: UserDto,
     @Param('id', ParseUUIDPipe) id: string,
+    @Query() query: PaginationDto,
   ) {
-    return this.tasks.history(user.id, id);
+    return this.tasks.history(user.id, id, query);
   }
 }

@@ -48,6 +48,47 @@ test('create a closed group and join through a preserved invitation after regist
     await expect(
       member.getByRole('heading', { name: 'Учебная команда', exact: true }),
     ).toBeVisible();
+    const memberGroupUrl = member.url();
+    await page.getByRole('button', { name: 'Добавить задание', exact: true }).click();
+    await page.getByLabel('Название задания', { exact: true }).fill('Самостоятельная работа');
+    await page.getByRole('button', { name: 'Сохранить задание', exact: true }).click();
+    await expect(page.getByText('Самостоятельная работа', { exact: true })).toBeVisible();
+    await member.reload();
+    const individual = member
+      .getByTestId(/^task-/)
+      .filter({ has: member.getByText('Самостоятельная работа', { exact: true }) });
+    await individual.getByRole('button', { name: 'Выполнить', exact: true }).click();
+    await expect(individual).toHaveCount(0);
+    const ownerIndividual = page
+      .getByTestId(/^task-/)
+      .filter({ has: page.getByText('Самостоятельная работа', { exact: true }) });
+    await expect(
+      ownerIndividual.getByRole('button', { name: 'Выполнить', exact: true }),
+    ).toBeEnabled();
+    await member.goto('/tasks');
+    await expect(member.getByLabel('Выполнено вовремя: 1', { exact: true })).toBeVisible();
+    await page.getByRole('button', { name: 'Добавить задание', exact: true }).click();
+    await page.getByLabel('Название задания', { exact: true }).fill('Проект команды');
+    await page.getByRole('button', { name: 'Режим выполнения', exact: true }).click();
+    await page.getByRole('button', { name: 'Общее выполнение группы', exact: true }).click();
+    await page.getByRole('button', { name: 'Сохранить задание', exact: true }).click();
+    await member.goto(memberGroupUrl);
+    const commonMember = member
+      .getByTestId(/^task-/)
+      .filter({ has: member.getByText('Проект команды', { exact: true }) });
+    await expect(
+      commonMember.getByRole('button', { name: 'Выполнить', exact: true }),
+    ).toBeDisabled();
+    const commonOwner = page
+      .getByTestId(/^task-/)
+      .filter({ has: page.getByText('Проект команды', { exact: true }) });
+    await commonOwner.getByRole('button', { name: 'Выполнить', exact: true }).click();
+    await expect(page.getByLabel('Выполнено вовремя: 1', { exact: true })).toBeVisible();
+    await member.reload();
+    await expect(member.getByLabel('Выполнено вовремя: 1', { exact: true })).toBeVisible();
+    await member.goto('/tasks');
+    await expect(member.getByLabel('Выполнено вовремя: 1', { exact: true })).toBeVisible();
+    await member.goto(memberGroupUrl);
     await member.getByRole('button', { name: 'Выйти из группы', exact: true }).click();
     await member.getByRole('button', { name: 'Подтвердить', exact: true }).click();
     await expect(member.getByText('Пока нет групп', { exact: true })).toBeVisible();

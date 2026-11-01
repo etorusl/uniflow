@@ -26,13 +26,13 @@ export default defineConfig({
     {
       command: 'pnpm --filter @uniflow/server start',
       url: 'http://127.0.0.1:3000/api/v1/health/live',
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: !process.env.CI && !process.env.UNIFLOW_ISOLATED_TESTS,
       timeout: 30000,
     },
     {
-      command: 'pnpm dev:web',
+      command: 'pnpm preview:web',
       url: 'http://localhost:8081',
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: !process.env.CI && !process.env.UNIFLOW_ISOLATED_TESTS,
       timeout: 90000,
     },
   ],

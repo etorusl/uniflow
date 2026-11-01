@@ -390,14 +390,94 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/statistics/me": {
+    "/api/v1/groups/{groupId}/tasks": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get: operations["StatisticsController_statistics"];
+        get: operations["GroupTasksController_list"];
+        put?: never;
+        post: operations["GroupTasksController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/groups/{groupId}/tasks/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GroupTasksController_get"];
+        put?: never;
+        post?: never;
+        delete: operations["GroupTasksController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["GroupTasksController_update"];
+        trace?: never;
+    };
+    "/api/v1/groups/{groupId}/tasks/{id}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["GroupTasksController_complete"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/groups/{groupId}/tasks/{id}/reopen": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["GroupTasksController_reopen"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/groups/{groupId}/tasks/{id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GroupTasksController_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/groups/{groupId}/statistics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GroupTasksController_statistics"];
         put?: never;
         post?: never;
         delete?: never;
@@ -574,6 +654,22 @@ export interface paths {
             cookie?: never;
         };
         get: operations["GroupsController_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/statistics/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["StatisticsController_statistics"];
         put?: never;
         post?: never;
         delete?: never;
@@ -773,6 +869,19 @@ export interface components {
             timeZone: string;
         };
         TaskDto: {
+            /** @enum {string} */
+            scope: "PERSONAL" | "GROUP";
+            /** Format: uuid */
+            groupId: string | null;
+            groupName: string | null;
+            /** @enum {string|null} */
+            mode: "INDIVIDUAL" | "SHARED" | null;
+            /** Format: uuid */
+            authorId: string;
+            version: number;
+            canEdit: boolean;
+            canDelete: boolean;
+            canComplete: boolean;
             /** Format: uuid */
             id: string;
             title: string;
@@ -814,7 +923,39 @@ export interface components {
             deadlineSnapshot: string;
         };
         TaskHistoryDto: {
+            total: number;
             items: components["schemas"]["TaskEventDto"][];
+        };
+        GroupTaskCreateDto: {
+            title: string;
+            description: string;
+            /** Format: date-time */
+            dueAt: string;
+            /** @enum {string} */
+            mode: "INDIVIDUAL" | "SHARED";
+        };
+        GroupTaskUpdateDto: {
+            title: string;
+            description: string;
+            /** Format: date-time */
+            dueAt: string;
+            version: number;
+        };
+        GroupTaskEventDto: {
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            kind: "COMPLETED" | "REOPENED";
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            deadlineSnapshot: string;
+            /** Format: uuid */
+            actorId: string;
+        };
+        GroupTaskHistoryDto: {
+            items: components["schemas"]["GroupTaskEventDto"][];
+            total: number;
         };
         StatisticsDto: {
             total: number;
@@ -1612,6 +1753,8 @@ export interface operations {
                 limit?: number;
                 status?: "ALL" | "OPEN" | "COMPLETED" | "OVERDUE";
                 subjectId?: string;
+                scope?: "PERSONAL" | "GROUP" | "ALL";
+                groupId?: string;
             };
             header?: never;
             path?: never;
@@ -1740,7 +1883,10 @@ export interface operations {
     };
     TasksController_history: {
         parameters: {
-            query?: never;
+            query?: {
+                page?: number;
+                limit?: number;
+            };
             header?: never;
             path: {
                 id: string;
@@ -1759,11 +1905,203 @@ export interface operations {
             };
         };
     };
-    StatisticsController_statistics: {
+    GroupTasksController_list: {
+        parameters: {
+            query?: {
+                page?: number;
+                limit?: number;
+                status?: "ALL" | "OPEN" | "COMPLETED" | "OVERDUE";
+                subjectId?: string;
+                scope?: "PERSONAL" | "GROUP" | "ALL";
+                groupId?: string;
+            };
+            header?: never;
+            path: {
+                groupId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TasksPageDto"];
+                };
+            };
+        };
+    };
+    GroupTasksController_create: {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                groupId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GroupTaskCreateDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaskDto"];
+                };
+            };
+        };
+    };
+    GroupTasksController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                groupId: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaskDto"];
+                };
+            };
+        };
+    };
+    GroupTasksController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                groupId: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    GroupTasksController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                groupId: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GroupTaskUpdateDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaskDto"];
+                };
+            };
+        };
+    };
+    GroupTasksController_complete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                groupId: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaskDto"];
+                };
+            };
+        };
+    };
+    GroupTasksController_reopen: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                groupId: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaskDto"];
+                };
+            };
+        };
+    };
+    GroupTasksController_history: {
+        parameters: {
+            query?: {
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                groupId: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupTaskHistoryDto"];
+                };
+            };
+        };
+    };
+    GroupTasksController_statistics: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                groupId: string;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -2135,6 +2473,25 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AuditPageDto"];
+                };
+            };
+        };
+    };
+    StatisticsController_statistics: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StatisticsDto"];
                 };
             };
         };

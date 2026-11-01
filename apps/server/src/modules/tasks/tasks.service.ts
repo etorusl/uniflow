@@ -1,23 +1,26 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { DateTime } from 'luxon';
 import { DatabaseService } from '../../infrastructure/database.service.js';
-import { pageQuery } from '../../common/pagination.dto.js';
+import { pageQuery, type PaginationDto } from '../../common/pagination.dto.js';
 import { CatalogService } from '../catalog/catalog.service.js';
 import type { Prisma, Subject, Task } from '../../generated/prisma/client.js';
 import type { StatisticsDto, TaskDto, TaskInputDto, TasksQueryDto } from './tasks.dto.js';
 
-export function taskStatus(
-  task: Pick<Task, 'completedAt' | 'deadlineAtCompletion' | 'dueAt'>,
-  now = new Date(),
-): TaskDto['status'] {
-  if (task.completedAt)
-    return task.completedAt <= (task.deadlineAtCompletion ?? task.dueAt)
-      ? 'COMPLETED_ON_TIME'
-      : 'COMPLETED_LATE';
-  return task.dueAt < now ? 'OVERDUE' : 'OPEN';
-}
+export { taskStatus } from './task-status.js';
+import { taskStatus } from './task-status.js';
+import { GroupTasksService } from '../group-tasks/group-tasks.service.js';
+
 function present(task: Task & { subject: Subject | null }): TaskDto {
   return {
+    scope: 'PERSONAL',
+    groupId: null,
+    groupName: null,
+    mode: null,
+    authorId: task.userId,
+    version: 0,
+    canEdit: true,
+    canDelete: true,
+    canComplete: true,
     id: task.id,
     title: task.title,
     description: task.description,
@@ -36,6 +39,7 @@ export class TasksService {
   constructor(
     @Inject(DatabaseService) private readonly db: DatabaseService,
     @Inject(CatalogService) private readonly catalog: CatalogService,
+    @Inject(GroupTasksService) private readonly groupTasks: GroupTasksService,
   ) {}
   async task(userId: string, id: string) {
     const value = await this.db.task.findFirst({
@@ -46,6 +50,7 @@ export class TasksService {
     return value;
   }
   async list(userId: string, query: TasksQueryDto) {
+    if (query.scope !== 'PERSONAL') return this.groupTasks.feed(userId, query);
     const where: Prisma.TaskWhereInput = {
       userId,
       ...(query.subjectId ? { subjectId: query.subjectId } : {}),
@@ -142,13 +147,15 @@ export class TasksService {
       return present(result);
     });
   }
-  async history(userId: string, id: string) {
+  async history(userId: string, id: string, query: PaginationDto) {
     await this.task(userId, id);
     const values = await this.db.taskEvent.findMany({
       where: { taskId: id },
       orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
+      ...pageQuery(query),
     });
     return {
+      total: await this.db.taskEvent.count({ where: { taskId: id } }),
       items: values.map((value) => ({
         id: value.id,
         kind: value.kind,
@@ -165,7 +172,10 @@ export class TasksService {
         COUNT(*) FILTER (WHERE "completedAt" IS NOT NULL AND "completedAt" > "deadlineAtCompletion")::int AS "completedLate",
         COUNT(*) FILTER (WHERE "completedAt" IS NULL AND "dueAt" < NOW())::int AS overdue
       FROM tasks WHERE "userId" = ${userId}::uuid`;
+    const grouped = await this.groupTasks.personalStatistics(userId);
     const counts = value!;
+    for (const key of ['total', 'open', 'completedOnTime', 'completedLate', 'overdue'] as const)
+      counts[key] += grouped[key];
     return {
       ...counts,
       completionRate: counts.total

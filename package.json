@@ -42,9 +42,10 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "pnpm build:server && pnpm --filter @uniflow/server test",
-    "test:integration": "pnpm build:server && pnpm --filter @uniflow/server test:integration",
-    "test:e2e": "playwright test",
-    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm api:check && pnpm format:check"
+    "test:integration": "pnpm build:server && node scripts/test-environment.mjs integration",
+    "test:e2e": "pnpm build:web && node scripts/test-environment.mjs e2e",
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm api:check && pnpm format:check",
+    "preview:web": "node scripts/serve-web.mjs"
   },
   "devDependencies": {
     "@playwright/test": "1.64.1",

@@ -1,3 +1,4 @@
+import { Pager } from '../../shared/pager';
 import { useCallback, useEffect, useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import { ActivityIndicator, Text, View } from 'react-native';
@@ -7,6 +8,7 @@ import { Button, Field, Notice, formStyles } from '../../shared/forms';
 import { Dialog } from '../../shared/dialog';
 import { SelectField } from '../../shared/select-field';
 import { EmptyState, pageStyles } from '../../shared/empty-state';
+import { TasksWorkspace } from '../tasks/tasks-workspace';
 import { useAuth } from '../auth/auth-context';
 import { loadSubjects, type Subject } from '../study/data';
 
@@ -334,6 +336,7 @@ export function GroupsWorkspace() {
             ))}
             <Pager page={membersPage} total={membersTotal} limit={20} setPage={setMembersPage} />
           </View>
+          <TasksWorkspace group={selected} />
           {selected.role !== 'MEMBER' && (
             <View style={formStyles.card}>
               <Text style={pageStyles.heading}>Приглашения</Text>
@@ -480,30 +483,5 @@ export function GroupsWorkspace() {
         />
       </Dialog>
     </>
-  );
-}
-export function Pager({
-  page,
-  total,
-  limit,
-  setPage,
-}: {
-  page: number;
-  total: number;
-  limit: number;
-  setPage: (n: number) => void;
-}) {
-  if (total <= limit && page === 1) return null;
-  return (
-    <View style={formStyles.row}>
-      <Button title="Назад" secondary disabled={page <= 1} onPress={() => setPage(page - 1)} />
-      <Text>Страница {page}</Text>
-      <Button
-        title="Далее"
-        secondary
-        disabled={page * limit >= total}
-        onPress={() => setPage(page + 1)}
-      />
-    </View>
   );
 }
