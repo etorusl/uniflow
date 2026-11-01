@@ -49,11 +49,16 @@ export async function pickFile(): Promise<{
     },
   };
 }
-export async function saveFile(blob: Blob, filename: string, mimeType: string) {
+export async function saveFile(bytes: ArrayBuffer, filename: string, mimeType: string) {
   if (!(await Sharing.isAvailableAsync()))
     throw new Error('На устройстве недоступно открытие файлов.');
   const safe = filename.replace(/[\\/]/g, '_');
-  const file = new File(Paths.cache, `uniflow-${Date.now()}-${safe}`);
-  await file.write(new Uint8Array(await blob.arrayBuffer()));
+  const directory = new Directory(
+    Paths.cache,
+    `uniflow-download-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+  );
+  directory.create();
+  const file = new File(directory, safe);
+  await file.write(new Uint8Array(bytes));
   await Sharing.shareAsync(file.uri, { mimeType, dialogTitle: filename });
 }

@@ -10,8 +10,8 @@ export async function pickFile(): Promise<{ blob: Blob; filename: string; size: 
   if (!asset.file) throw new Error('Не удалось прочитать выбранный файл.');
   return { blob: asset.file, filename: asset.name, size: asset.file.size };
 }
-export async function saveFile(blob: Blob, filename: string) {
-  const url = URL.createObjectURL(blob);
+export async function saveFile(bytes: ArrayBuffer, filename: string, mimeType: string) {
+  const url = URL.createObjectURL(new Blob([bytes], { type: mimeType }));
   const anchor = document.createElement('a');
   anchor.href = url;
   anchor.download = filename;

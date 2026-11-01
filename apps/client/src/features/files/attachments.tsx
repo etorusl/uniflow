@@ -78,13 +78,13 @@ export function Attachments({
     setBusy(true);
     setError('');
     try {
-      const blob = resultData(
+      const bytes = resultData(
         await api.GET('/api/v1/files/{id}/content', {
           params: { path: { id: file.id } },
-          parseAs: 'blob',
+          parseAs: 'arrayBuffer',
         }),
       );
-      await saveFile(blob, file.filename, file.mimeType);
+      await saveFile(bytes, file.filename, file.mimeType);
     } catch (e) {
       setError(errorMessage(e));
     } finally {

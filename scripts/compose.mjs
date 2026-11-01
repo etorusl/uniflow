@@ -41,4 +41,16 @@ if (result.error)
   console.error(
     'Docker Compose is unavailable. Install Docker Desktop or Docker/Colima and start the Docker daemon.',
   );
+if (result.status !== 0 && process.argv[2] === 'up') {
+  const base = args.slice(0, args.length - process.argv.slice(2).length);
+  spawnSync(command, [...base, 'ps', '--all'], { stdio: 'inherit', cwd: root });
+  spawnSync(command, [...base, 'logs', '--no-color', '--tail', '80', 'seaweedfs'], {
+    stdio: 'inherit',
+    cwd: root,
+  });
+  spawnSync('docker', ['inspect', '--format', '{{json .State.Health}}', 'uniflow-seaweedfs-1'], {
+    stdio: 'inherit',
+    cwd: root,
+  });
+}
 process.exit(result.status ?? 1);
