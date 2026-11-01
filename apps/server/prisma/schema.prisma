@@ -36,6 +36,8 @@ model User {
   semesters       Semester[]
   scheduleEntries ScheduleEntry[]
   tasks           Task[]
+  ownedGroups     Group[]
+  memberships     GroupMember[]
 
   @@map("users")
 }
@@ -91,6 +93,7 @@ model Subject {
   user    User @relation(fields: [userId], references: [id], onDelete: Cascade)
   entries ScheduleEntry[]
   tasks   Task[]
+  memberships GroupMember[]
   @@index([userId, name])
   @@map("subjects")
 }
@@ -189,4 +192,68 @@ model TaskEvent {
   task             Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
   @@index([taskId, createdAt])
   @@map("task_events")
+}
+
+enum MemberRole {
+  MEMBER
+  MODERATOR
+}
+
+model Group {
+  id          String @id @default(uuid()) @db.Uuid
+  ownerId     String @db.Uuid
+  name        String
+  subjectName String
+  description String @default("")
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  archivedAt  DateTime? @db.Timestamptz(3)
+  owner       User @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+  members     GroupMember[]
+  invitations GroupInvitation[]
+  audit       GroupAudit[]
+  @@map("groups")
+}
+
+model GroupMember {
+  id        String @id @default(uuid()) @db.Uuid
+  groupId   String @db.Uuid
+  userId    String @db.Uuid
+  role      MemberRole @default(MEMBER)
+  active    Boolean @default(true)
+  banned    Boolean @default(false)
+  joinedAt  DateTime @default(now()) @db.Timestamptz(3)
+  subjectId String? @db.Uuid
+  group     Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject   Subject? @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  @@unique([groupId, userId])
+  @@index([userId, active, groupId])
+  @@map("group_members")
+}
+
+model GroupInvitation {
+  id        String @id @default(uuid()) @db.Uuid
+  groupId   String @db.Uuid
+  tokenHash String @unique
+  createdBy String @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  expiresAt DateTime @db.Timestamptz(3)
+  revokedAt DateTime? @db.Timestamptz(3)
+  maxUses   Int
+  uses      Int @default(0)
+  group     Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  @@index([groupId, createdAt])
+  @@map("group_invitations")
+}
+
+model GroupAudit {
+  id        String @id @default(uuid()) @db.Uuid
+  groupId   String @db.Uuid
+  actorId   String @db.Uuid
+  targetId  String? @db.Uuid
+  action    String
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  group     Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  @@index([groupId, createdAt, id])
+  @@map("group_audit")
 }

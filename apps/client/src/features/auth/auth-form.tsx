@@ -15,7 +15,15 @@ const titles: Record<Mode, string> = {
 };
 export function AuthForm({ mode }: { mode: Mode }) {
   const { login, refresh } = useAuth();
-  const params = useLocalSearchParams<{ token?: string }>();
+  const params = useLocalSearchParams<{ token?: string; invite?: string }>();
+  const invitationParams =
+    typeof params.invite === 'string' && /^[0-9A-Fa-f]{24}$/.test(params.invite)
+      ? { invite: params.invite }
+      : {};
+  function afterLogin() {
+    if (invitationParams.invite) router.replace({ pathname: '/groups', params: invitationParams });
+    else router.replace('/');
+  }
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
@@ -29,7 +37,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
     try {
       if (mode === 'login') {
         await login(email.trim().toLowerCase(), password);
-        router.replace('/');
+        afterLogin();
       } else if (mode === 'register') {
         resultData(
           await api.POST('/api/v1/auth/register', {
@@ -42,7 +50,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
           }),
         );
         await login(email.trim().toLowerCase(), password);
-        router.replace('/');
+        afterLogin();
       } else if (mode === 'forgot')
         setMessage(
           resultData(await api.POST('/api/v1/auth/forgot-password', { body: { email } })).message,
@@ -121,10 +129,10 @@ export function AuthForm({ mode }: { mode: Mode }) {
         />
       )}
       <View style={formStyles.row}>
-        <Link href="/login" style={formStyles.link}>
+        <Link href={{ pathname: '/login', params: invitationParams }} style={formStyles.link}>
           Вход
         </Link>
-        <Link href="/register" style={formStyles.link}>
+        <Link href={{ pathname: '/register', params: invitationParams }} style={formStyles.link}>
           Регистрация
         </Link>
         {mode === 'login' && (

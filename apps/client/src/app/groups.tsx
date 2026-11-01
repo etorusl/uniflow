@@ -1,5 +1,7 @@
 import { Text, View } from 'react-native';
-import { EmptyState, pageStyles } from '../shared/empty-state';
+import { pageStyles } from '../shared/empty-state';
+import { RequireSession } from '../features/auth/require-session';
+import { GroupsWorkspace } from '../features/groups/groups-workspace';
 export default function GroupsScreen() {
   return (
     <>
@@ -9,11 +11,9 @@ export default function GroupsScreen() {
         </Text>
         <Text style={pageStyles.subtitle}>Учиться вместе — удобнее.</Text>
       </View>
-      <EmptyState
-        title="Пространство для вашей группы"
-        description="Общие материалы и задания по предметам появятся здесь. Функция готовится к запуску."
-        symbol="◎"
-      />
+      <RequireSession>
+        <GroupsWorkspace />
+      </RequireSession>
     </>
   );
 }

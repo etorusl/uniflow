@@ -8,6 +8,6 @@ import { RateLimitService } from './rate-limit.service.js';
 @Module({
   controllers: [AuthController, UsersController],
   providers: [AuthService, AuthMailService, SessionGuard, RateLimitService],
-  exports: [AuthService, AuthMailService, SessionGuard],
+  exports: [AuthService, AuthMailService, SessionGuard, RateLimitService],
 })
 export class AuthModule {}
