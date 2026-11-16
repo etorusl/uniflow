@@ -36,6 +36,19 @@ model User {
   semesters       Semester[]
   scheduleEntries ScheduleEntry[]
   tasks           Task[]
+  ownedGroups     StudyGroup[]
+  groupMemberships GroupMember[]
+  groupInvitations GroupInvitation[]
+  groupActions GroupAuditEvent[]
+  authoredGroupTasks GroupTask[] @relation("GroupTaskAuthor")
+  closedGroupTasks GroupTask[] @relation("GroupTaskCloser")
+  groupTaskCompletions GroupTaskCompletion[]
+  groupTaskEvents GroupTaskEvent[]
+  uploadedAttachments Attachment[] @relation("AttachmentUploader")
+  authoredGroupMaterials GroupMaterial[] @relation("MaterialAuthor")
+  reminderPreference ReminderPreference?
+  pushSubscriptions PushSubscription[]
+  reminderNotices ReminderNotice[]
 
   @@map("users")
 }
@@ -47,6 +60,7 @@ model Session {
   createdAt DateTime @default(now()) @db.Timestamptz(3)
   expiresAt DateTime @db.Timestamptz(3)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pushSubscriptions PushSubscription[]
 
   @@index([userId])
   @@index([expiresAt])
@@ -91,6 +105,7 @@ model Subject {
   user    User @relation(fields: [userId], references: [id], onDelete: Cascade)
   entries ScheduleEntry[]
   tasks   Task[]
+  groupLinks GroupMember[]
   @@index([userId, name])
   @@map("subjects")
 }
@@ -175,6 +190,7 @@ model Task {
   user                 User @relation(fields: [userId], references: [id], onDelete: Cascade)
   subject              Subject? @relation(fields: [subjectId], references: [id], onDelete: SetNull)
   history              TaskEvent[]
+  attachments          Attachment[]
   @@index([userId, dueAt, id])
   @@index([userId, completedAt])
   @@map("tasks")
@@ -189,4 +205,271 @@ model TaskEvent {
   task             Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
   @@index([taskId, createdAt])
   @@map("task_events")
+}
+
+enum GroupMemberRole {
+  MEMBER
+  MODERATOR
+}
+
+enum GroupTaskMode {
+  INDIVIDUAL
+  SHARED
+}
+
+model StudyGroup {
+  id           String @id @default(uuid()) @db.Uuid
+  ownerId      String @db.Uuid
+  name         String
+  subjectName  String
+  description  String @default("")
+  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime @updatedAt @db.Timestamptz(3)
+  archivedAt   DateTime? @db.Timestamptz(3)
+  owner        User @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+  ownerMembership GroupMember @relation("GroupOwnerMembership", fields: [id, ownerId], references: [groupId, userId], onDelete: NoAction, onUpdate: NoAction, map: "study_groups_owner_member_fkey")
+  members      GroupMember[]
+  invitations  GroupInvitation[]
+  audit        GroupAuditEvent[]
+  tasks        GroupTask[]
+  materials    GroupMaterial[]
+  @@index([ownerId])
+  @@map("study_groups")
+}
+
+model GroupMember {
+  groupId   String @db.Uuid
+  userId    String @db.Uuid
+  role      GroupMemberRole @default(MEMBER)
+  subjectId String? @db.Uuid
+  joinedAt  DateTime @default(now()) @db.Timestamptz(3)
+  leftAt    DateTime? @db.Timestamptz(3)
+  blockedAt DateTime? @db.Timestamptz(3)
+  group     StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject   Subject? @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  ownedGroups StudyGroup[] @relation("GroupOwnerMembership")
+  @@id([groupId, userId])
+  @@index([userId, leftAt])
+  @@index([groupId, leftAt, joinedAt])
+  @@map("group_members")
+}
+
+model GroupInvitation {
+  id          String @id @default(uuid()) @db.Uuid
+  groupId     String @db.Uuid
+  creatorId   String? @db.Uuid
+  tokenHash   String @unique
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  expiresAt   DateTime @db.Timestamptz(3)
+  revokedAt   DateTime? @db.Timestamptz(3)
+  maxUses     Int
+  uses        Int @default(0)
+  group       StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  creator     User? @relation(fields: [creatorId], references: [id], onDelete: SetNull)
+  @@index([groupId, expiresAt])
+  @@map("group_invitations")
+}
+
+model GroupAuditEvent {
+  id           String @id @default(uuid()) @db.Uuid
+  groupId      String @db.Uuid
+  actorId      String? @db.Uuid
+  targetUserId String? @db.Uuid
+  kind         String
+  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+  group        StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  actor        User? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  @@index([groupId, createdAt])
+  @@map("group_audit_events")
+}
+
+model GroupTask {
+  id                   String @id @default(uuid()) @db.Uuid
+  groupId              String @db.Uuid
+  authorId             String? @db.Uuid
+  mode                 GroupTaskMode
+  title                String
+  description          String @default("")
+  dueAt                DateTime @db.Timestamptz(3)
+  deadlineRevision     Int @default(1)
+  completedAt          DateTime? @db.Timestamptz(3)
+  deadlineAtCompletion DateTime? @db.Timestamptz(3)
+  completedById        String? @db.Uuid
+  createdAt            DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt            DateTime @updatedAt @db.Timestamptz(3)
+  deletedAt            DateTime? @db.Timestamptz(3)
+  group                StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  author               User? @relation("GroupTaskAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  completedBy          User? @relation("GroupTaskCloser", fields: [completedById], references: [id], onDelete: SetNull)
+  completions          GroupTaskCompletion[]
+  history              GroupTaskEvent[]
+  attachments          Attachment[]
+  @@index([groupId, deletedAt, dueAt, id])
+  @@map("group_tasks")
+}
+
+model GroupTaskCompletion {
+  taskId               String @db.Uuid
+  userId               String @db.Uuid
+  completedAt          DateTime @db.Timestamptz(3)
+  deadlineAtCompletion DateTime @db.Timestamptz(3)
+  task                 GroupTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user                 User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@id([taskId, userId])
+  @@index([userId, taskId])
+  @@map("group_task_completions")
+}
+
+model GroupTaskEvent {
+  id               String @id @default(uuid()) @db.Uuid
+  taskId           String @db.Uuid
+  actorId          String? @db.Uuid
+  kind             TaskEventKind
+  createdAt        DateTime @default(now()) @db.Timestamptz(3)
+  deadlineSnapshot DateTime @db.Timestamptz(3)
+  task             GroupTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  actor            User? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  @@index([taskId, createdAt, id])
+  @@index([taskId, actorId, createdAt, id])
+  @@map("group_task_events")
+}
+
+enum AttachmentState {
+  PENDING
+  READY
+  DELETING
+}
+
+model Attachment {
+  id          String          @id @default(uuid()) @db.Uuid
+  uploaderId  String?         @db.Uuid
+  taskId      String?         @db.Uuid
+  groupTaskId String?         @db.Uuid
+  materialId  String?         @db.Uuid
+  objectKey   String          @unique
+  name        String
+  mimeType    String
+  size        Int
+  state       AttachmentState @default(PENDING)
+  createdAt   DateTime       @default(now()) @db.Timestamptz(3)
+  uploader    User?          @relation("AttachmentUploader", fields: [uploaderId], references: [id], onDelete: SetNull)
+  task        Task?          @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  groupTask   GroupTask?     @relation(fields: [groupTaskId], references: [id], onDelete: SetNull)
+  material    GroupMaterial? @relation(fields: [materialId], references: [id], onDelete: SetNull)
+
+  @@index([taskId, state, createdAt])
+  @@index([groupTaskId, state, createdAt])
+  @@index([materialId, state, createdAt])
+  @@index([uploaderId, state])
+  @@index([state, createdAt])
+  @@map("attachments")
+}
+
+model GroupMaterial {
+  id          String       @id @default(uuid()) @db.Uuid
+  groupId     String       @db.Uuid
+  authorId    String?      @db.Uuid
+  title       String
+  description String       @default("")
+  createdAt   DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime     @updatedAt @db.Timestamptz(3)
+  group       StudyGroup   @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  author      User?        @relation("MaterialAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  attachments Attachment[]
+
+  @@index([groupId, createdAt, id])
+  @@index([authorId])
+  @@map("group_materials")
+}
+
+enum PushTransport {
+  WEB
+  ANDROID
+}
+
+enum ReminderTaskKind {
+  PERSONAL
+  GROUP
+}
+
+enum ReminderDeliveryStatus {
+  PENDING
+  SENDING
+  SENT
+  SKIPPED
+  FAILED
+}
+
+model ReminderPreference {
+  userId        String   @id @db.Uuid
+  enabled       Boolean  @default(false)
+  minutesBefore Int      @default(60)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("reminder_preferences")
+}
+
+model PushSubscription {
+  id          String             @id @default(uuid()) @db.Uuid
+  userId      String             @db.Uuid
+  sessionId   String?            @db.Uuid
+  transport   PushTransport
+  fingerprint String             @unique
+  address     String
+  p256dh      String?
+  authSecret  String?
+  updatedAt   DateTime           @updatedAt @db.Timestamptz(3)
+  revokedAt   DateTime?          @db.Timestamptz(3)
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  session     Session?           @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  deliveries  ReminderDelivery[]
+
+  @@index([userId, revokedAt])
+  @@index([sessionId, transport, revokedAt])
+  @@map("push_subscriptions")
+}
+
+model ReminderRevision {
+  key       String   @id
+  version   Int      @default(1)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+
+  @@map("reminder_revisions")
+}
+
+model ReminderDelivery {
+  id             String                 @id @default(uuid()) @db.Uuid
+  subscriptionId String                @db.Uuid
+  userId         String                 @db.Uuid
+  kind           ReminderTaskKind
+  taskId         String                 @db.Uuid
+  generation     String
+  scheduledAt    DateTime              @db.Timestamptz(3)
+  status         ReminderDeliveryStatus @default(PENDING)
+  attempts       Int                    @default(0)
+  lastResult     String?
+  updatedAt      DateTime               @updatedAt @db.Timestamptz(3)
+  subscription   PushSubscription       @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@unique([subscriptionId, kind, taskId, generation])
+  @@index([status, updatedAt])
+  @@map("reminder_deliveries")
+}
+
+model ReminderNotice {
+  id          String           @id @default(uuid()) @db.Uuid
+  userId      String           @db.Uuid
+  kind        ReminderTaskKind
+  taskId      String           @db.Uuid
+  groupId     String?          @db.Uuid
+  generation  String
+  scheduledAt DateTime         @db.Timestamptz(3)
+  createdAt   DateTime?        @db.Timestamptz(3)
+  readAt      DateTime?        @db.Timestamptz(3)
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, kind, taskId, generation])
+  @@index([userId, createdAt])
+  @@map("reminder_notices")
 }

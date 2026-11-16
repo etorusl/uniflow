@@ -11,6 +11,8 @@ import { ENVIRONMENT, type Environment } from './environment.js';
 export const PROBE_QUEUE = 'system.probe';
 export const AUTH_EMAIL_QUEUE = 'auth.email';
 export const CLEANUP_QUEUE = 'system.cleanup';
+export const REMINDER_RECONCILE_QUEUE = 'notifications.reconcile';
+export const REMINDER_DELIVERY_QUEUE = 'notifications.deliver';
 @Injectable()
 export class JobsService implements OnModuleInit, OnModuleDestroy {
   readonly boss: PgBoss;
@@ -24,6 +26,8 @@ export class JobsService implements OnModuleInit, OnModuleDestroy {
     await this.boss.createQueue(PROBE_QUEUE);
     await this.boss.createQueue(AUTH_EMAIL_QUEUE);
     await this.boss.createQueue(CLEANUP_QUEUE);
+    await this.boss.createQueue(REMINDER_RECONCILE_QUEUE);
+    await this.boss.createQueue(REMINDER_DELIVERY_QUEUE);
   }
   async onModuleDestroy() {
     await this.boss.stop({ graceful: true, timeout: 5000 });

@@ -2,19 +2,28 @@ import { createApiClient } from '@uniflow/api-client';
 import { Platform } from 'react-native';
 import { readSessionToken } from './session-storage';
 
-export const api = createApiClient(process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000');
+export const apiBaseUrl = (process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000').replace(
+  /\/$/,
+  '',
+);
+export const api = createApiClient(apiBaseUrl);
 let csrf: string | undefined;
 export function setCsrfToken(token: string | undefined) {
   csrf = token;
 }
+export async function apiRequestHeaders(method: string): Promise<Record<string, string>> {
+  if (Platform.OS !== 'web') {
+    const token = await readSessionToken();
+    return token
+      ? { 'x-uniflow-client': 'native', authorization: `Bearer ${token}` }
+      : { 'x-uniflow-client': 'native' };
+  }
+  return csrf && !['GET', 'HEAD', 'OPTIONS'].includes(method) ? { 'x-csrf-token': csrf } : {};
+}
 api.use({
   async onRequest({ request }) {
-    if (Platform.OS !== 'web') {
-      request.headers.set('x-uniflow-client', 'native');
-      const token = await readSessionToken();
-      if (token) request.headers.set('authorization', `Bearer ${token}`);
-    } else if (csrf && !['GET', 'HEAD', 'OPTIONS'].includes(request.method))
-      request.headers.set('x-csrf-token', csrf);
+    for (const [name, value] of Object.entries(await apiRequestHeaders(request.method)))
+      request.headers.set(name, value);
     return request;
   },
 });

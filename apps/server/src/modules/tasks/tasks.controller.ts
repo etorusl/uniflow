@@ -35,6 +35,12 @@ export class TasksController {
   ) {
     return this.tasks.create(user.id, input);
   }
+  @Get(':id') @ApiOkResponse({ type: TaskDto }) get(
+    @CurrentUser() user: UserDto,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.tasks.get(user.id, id);
+  }
   @Patch(':id') @ApiOkResponse({ type: TaskDto }) update(
     @CurrentUser() user: UserDto,
     @Param('id', ParseUUIDPipe) id: string,

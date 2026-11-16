@@ -16,7 +16,7 @@
       "name": "UniFlow",
       "shortName": "UniFlow"
     },
-    "plugins": ["expo-router", "expo-dev-client", "expo-secure-store"],
+    "plugins": ["expo-router", "expo-dev-client", "expo-secure-store", "expo-sharing"],
     "experiments": {
       "typedRoutes": true
     }

@@ -11,11 +11,13 @@ import { EmptyState, pageStyles } from '../../shared/empty-state';
 import { colors } from '../../shared/theme';
 import { StatisticsCards, type Statistics } from './statistics-cards';
 
+type DashboardTask = components['schemas']['TaskDto'] | components['schemas']['GroupTaskDto'];
+
 export function TodayDashboard() {
   const { user } = useAuth();
   const zone = user?.timeZone ?? 'UTC';
   const [statistics, setStatistics] = useState<Statistics | null>(null),
-    [tasks, setTasks] = useState<components['schemas']['TaskDto'][]>([]),
+    [tasks, setTasks] = useState<DashboardTask[]>([]),
     [lessons, setLessons] = useState<Occurrence[]>([]),
     [error, setError] = useState(''),
     [loading, setLoading] = useState(true);
@@ -24,7 +26,7 @@ export function TodayDashboard() {
     setError('');
     try {
       const date = DateTime.now().setZone(zone).toISODate()!;
-      const [a, b, c] = await Promise.all([
+      const [progress, personal, timetable, group] = await Promise.all([
         api.GET('/api/v1/statistics/me').then(resultData),
         api
           .GET('/api/v1/tasks', { params: { query: { status: 'OPEN', page: 1, limit: 4 } } })
@@ -32,10 +34,17 @@ export function TodayDashboard() {
         api
           .GET('/api/v1/schedule/occurrences', { params: { query: { from: date, to: date } } })
           .then(resultData),
+        api
+          .GET('/api/v1/groups/tasks', { params: { query: { status: 'OPEN', page: 1, limit: 4 } } })
+          .then(resultData),
       ]);
-      setStatistics(a);
-      setTasks(b.items);
-      setLessons(c.items.filter((lesson) => !lesson.cancelled));
+      setStatistics(progress);
+      setTasks(
+        [...personal.items, ...group.items]
+          .sort((a, b) => a.dueAt.localeCompare(b.dueAt))
+          .slice(0, 4),
+      );
+      setLessons(timetable.items.filter((lesson) => !lesson.cancelled));
     } catch (error) {
       setError(errorMessage(error));
     } finally {
@@ -119,7 +128,15 @@ export function TodayDashboard() {
             <Text style={pageStyles.heading}>Ближайшие дедлайны</Text>
             {tasks.length ? (
               tasks.map((task) => (
-                <Link key={task.id} href="/tasks" asChild>
+                <Link
+                  key={task.id}
+                  href={
+                    'groupId' in task
+                      ? { pathname: '/groups', params: { groupId: task.groupId, taskId: task.id } }
+                      : { pathname: '/tasks', params: { taskId: task.id } }
+                  }
+                  asChild
+                >
                   <Pressable
                     accessibilityRole="link"
                     style={{ ...formStyles.card, width: '100%', marginBottom: 12 }}
@@ -136,7 +153,7 @@ export function TodayDashboard() {
                         .setZone(zone)
                         .setLocale('ru')
                         .toFormat('d LLL, HH:mm')}{' '}
-                      · {task.subjectName ?? 'Без предмета'}
+                      · {'groupId' in task ? task.groupName : (task.subjectName ?? 'Без предмета')}
                     </Text>
                   </Pressable>
                 </Link>

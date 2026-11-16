@@ -3,6 +3,8 @@ import { DateTime } from 'luxon';
 import { DatabaseService } from '../../infrastructure/database.service.js';
 import { pageQuery } from '../../common/pagination.dto.js';
 import { CatalogService } from '../catalog/catalog.service.js';
+import { JobsService } from '../../infrastructure/jobs.service.js';
+import { enqueueReminderChange } from '../notifications/reminder-changes.js';
 import type { Prisma, Subject, Task } from '../../generated/prisma/client.js';
 import type { StatisticsDto, TaskDto, TaskInputDto, TasksQueryDto } from './tasks.dto.js';
 
@@ -36,6 +38,7 @@ export class TasksService {
   constructor(
     @Inject(DatabaseService) private readonly db: DatabaseService,
     @Inject(CatalogService) private readonly catalog: CatalogService,
+    @Inject(JobsService) private readonly jobs: JobsService,
   ) {}
   async task(userId: string, id: string) {
     const value = await this.db.task.findFirst({
@@ -67,6 +70,9 @@ export class TasksService {
     ]);
     return { items: values.map(present), total };
   }
+  async get(userId: string, id: string) {
+    return present(await this.task(userId, id));
+  }
   private async data(userId: string, input: TaskInputDto) {
     if (input.subjectId) await this.catalog.subject(userId, input.subjectId);
     const dueAt = DateTime.fromISO(input.dueAt, { setZone: true });
@@ -80,12 +86,15 @@ export class TasksService {
     };
   }
   async create(userId: string, input: TaskInputDto) {
-    return present(
-      await this.db.task.create({
-        data: { userId, ...(await this.data(userId, input)) },
+    const data = await this.data(userId, input);
+    return this.db.$transaction(async (tx) => {
+      const task = await tx.task.create({
+        data: { userId, ...data },
         include: { subject: true },
-      }),
-    );
+      });
+      await enqueueReminderChange(tx, this.jobs, { type: 'TASK', taskId: task.id });
+      return present(task);
+    });
   }
   async update(userId: string, id: string, input: TaskInputDto) {
     await this.task(userId, id);
@@ -96,23 +105,22 @@ export class TasksService {
       >`SELECT id FROM tasks WHERE id = ${id}::uuid AND "userId" = ${userId}::uuid FOR UPDATE`;
       if (!locked.length) throw new NotFoundException('Задание не найдено.');
       const previous = await tx.task.findUniqueOrThrow({ where: { id } });
-      return present(
-        await tx.task.update({
-          where: { id },
-          data: {
-            ...data,
-            ...(previous.dueAt.getTime() !== data.dueAt.getTime()
-              ? { deadlineRevision: { increment: 1 } }
-              : {}),
-          },
-          include: { subject: true },
-        }),
-      );
+      const deadlineChanged = previous.dueAt.getTime() !== data.dueAt.getTime();
+      const task = await tx.task.update({
+        where: { id },
+        data: { ...data, ...(deadlineChanged ? { deadlineRevision: { increment: 1 } } : {}) },
+        include: { subject: true },
+      });
+      if (deadlineChanged) await enqueueReminderChange(tx, this.jobs, { type: 'TASK', taskId: id });
+      return present(task);
     });
   }
   async remove(userId: string, id: string) {
-    const result = await this.db.task.deleteMany({ where: { id, userId } });
-    if (!result.count) throw new NotFoundException('Задание не найдено.');
+    await this.db.$transaction(async (tx) => {
+      const result = await tx.task.deleteMany({ where: { id, userId } });
+      if (!result.count) throw new NotFoundException('Задание не найдено.');
+      await enqueueReminderChange(tx, this.jobs, { type: 'TASK', taskId: id });
+    });
   }
   async complete(userId: string, id: string, completed: boolean) {
     return this.db.$transaction(async (tx) => {
@@ -139,6 +147,7 @@ export class TasksService {
           deadlineSnapshot: completed ? task.dueAt : task.deadlineAtCompletion!,
         },
       });
+      await enqueueReminderChange(tx, this.jobs, { type: 'TASK', taskId: id });
       return present(result);
     });
   }

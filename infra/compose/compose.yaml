@@ -23,7 +23,7 @@ services:
       - -dir=/data
       - -ip=seaweedfs
       - -ip.bind=0.0.0.0
-      - -volume.max=4
+      - -volume.max=8
       - -master.volumeSizeLimitMB=128
       - -filer
       - -s3
@@ -34,8 +34,13 @@ services:
     volumes:
       - seaweedfs_data:/data
       - ./.local/seaweedfs-s3.json:/etc/seaweedfs/s3.json:ro
+      - ./infra/compose/seaweedfs-master.toml:/etc/seaweedfs/master.toml:ro
     healthcheck:
-      test: ['CMD', 'wget', '-q', '-O', '/dev/null', 'http://127.0.0.1:9333/cluster/status']
+      test:
+        - CMD-SHELL
+        - >-
+          wget -qO /dev/null http://127.0.0.1:8333/healthz &&
+          wget -qO- http://127.0.0.1:9333/dir/status | grep -q '"DataNodes":\[{'
       interval: 5s
       timeout: 3s
       retries: 20

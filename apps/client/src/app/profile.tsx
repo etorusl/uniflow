@@ -3,6 +3,8 @@ import { router } from 'expo-router';
 import { Text, View } from 'react-native';
 import { useAuth } from '../features/auth/auth-context';
 import { RequireSession } from '../features/auth/require-session';
+import { NotificationInbox } from '../features/notifications/inbox';
+import { NotificationSettings } from '../features/notifications/notification-settings';
 import { api, resultData, errorMessage } from '../platform/api';
 import { Button, Field, Notice, formStyles } from '../shared/forms';
 import { pageStyles } from '../shared/empty-state';
@@ -62,6 +64,10 @@ export default function ProfileScreen() {
         {!!message && <Notice success message={message} />}
         <Button title="Сохранить профиль" busy={busy} onPress={() => void save()} />
         <Button title="Выйти из аккаунта" busy={busy} secondary onPress={() => void leave()} />
+      </View>
+      <NotificationSettings key={user?.id} />
+      <View style={[formStyles.card, formStyles.narrow]}>
+        <NotificationInbox />
       </View>
     </RequireSession>
   );

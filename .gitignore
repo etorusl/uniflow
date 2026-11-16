@@ -32,6 +32,7 @@ test-results/
 *.p12
 *.p8
 *.mobileprovision
+google-services.json
 
 # Runtime data and local uploads
 /data/

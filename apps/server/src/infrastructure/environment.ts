@@ -27,6 +27,15 @@ const schema = z.object({
     .enum(['true', 'false'])
     .default('false')
     .transform((value) => value === 'true'),
+  FCM_PROJECT_ID: z.string().min(1).optional(),
+  FCM_CLIENT_EMAIL: z.email().optional(),
+  FCM_PRIVATE_KEY: z.string().min(1).optional(),
+  WEB_PUSH_PUBLIC_KEY: z.string().min(1).optional(),
+  WEB_PUSH_PRIVATE_KEY: z.string().min(1).optional(),
+  WEB_PUSH_SUBJECT: z
+    .string()
+    .regex(/^(mailto:|https:\/\/).+/)
+    .optional(),
 });
 export type Environment = z.infer<typeof schema>;
 export function workspaceRoot() {

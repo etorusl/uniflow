@@ -4,6 +4,8 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { ActivityIndicator, Text, View } from 'react-native';
 import type { components } from '@uniflow/api-client';
 import { useAuth } from '../auth/auth-context';
+import { notificationTarget } from '../notifications/notification-destination';
+import { AttachmentPanel } from '../files/attachments';
 import { loadSubjects, type Subject } from '../study/data';
 import { api, ensureSuccess, errorMessage, resultData } from '../../platform/api';
 import { Button, Field, Notice, formStyles } from '../../shared/forms';
@@ -25,7 +27,8 @@ const statusLabels: Record<Task['status'], string> = {
 export function TasksWorkspace() {
   const { user } = useAuth();
   const zone = user?.timeZone ?? 'UTC';
-  const params = useLocalSearchParams<{ create?: string }>();
+  const params = useLocalSearchParams<{ create?: string; taskId?: string }>();
+  const linkedId = notificationTarget({ kind: 'PERSONAL', taskId: params.taskId })?.taskId;
   const [items, setItems] = useState<Task[]>([]),
     [subjects, setSubjects] = useState<Subject[]>([]),
     [statistics, setStatistics] = useState<Statistics | null>(null),
@@ -37,9 +40,11 @@ export function TasksWorkspace() {
     [busy, setBusy] = useState(false),
     [error, setError] = useState(''),
     [message, setMessage] = useState('');
+  const [linked, setLinked] = useState<{ task?: Task; error?: string }>();
   const [editor, setEditor] = useState<{ id?: string } | null>(null),
     [remove, setRemove] = useState<Task | null>(null),
     [history, setHistory] = useState<{ title: string; items: Event[] } | null>(null);
+  const [attachments, setAttachments] = useState<Task | null>(null);
   const [title, setTitle] = useState(''),
     [description, setDescription] = useState(''),
     [subjectId, setSubjectId] = useState(''),
@@ -49,7 +54,7 @@ export function TasksWorkspace() {
     setLoading(true);
     setError('');
     try {
-      const [a, b, c] = await Promise.all([
+      const [a, b, c, taskByLink] = await Promise.all([
         loadSubjects(),
         api
           .GET('/api/v1/tasks', {
@@ -59,17 +64,25 @@ export function TasksWorkspace() {
           })
           .then(resultData),
         api.GET('/api/v1/statistics/me').then(resultData),
+        linkedId
+          ? api
+              .GET('/api/v1/tasks/{id}', { params: { path: { id: linkedId } } })
+              .then(resultData)
+              .then((task) => ({ task }))
+              .catch((cause) => ({ error: errorMessage(cause) }))
+          : undefined,
       ]);
       setSubjects(a);
       setItems(b.items);
       setTotal(b.total);
       setStatistics(c);
+      setLinked(taskByLink);
     } catch (error) {
       setError(errorMessage(error));
     } finally {
       setLoading(false);
     }
-  }, [filter, subjectFilter, page]);
+  }, [filter, subjectFilter, page, linkedId]);
   useEffect(() => {
     void reload();
   }, [reload]);
@@ -186,6 +199,16 @@ export function TasksWorkspace() {
   return (
     <>
       {statistics && <StatisticsCards value={statistics} />}
+      {!!linkedId && (
+        <View style={formStyles.row}>
+          <Text style={formStyles.muted}>Задание из напоминания</Text>
+          <Button
+            title="Показать все задания"
+            secondary
+            onPress={() => router.setParams({ taskId: undefined })}
+          />
+        </View>
+      )}
       <View style={formStyles.row}>
         <Button title="Добавить задание" onPress={() => edit()} />
         {(
@@ -223,14 +246,16 @@ export function TasksWorkspace() {
       {!!message && <Notice message={message} success />}
       {loading ? (
         <ActivityIndicator color={colors.primary} />
-      ) : items.length === 0 ? (
+      ) : linkedId && linked?.error ? (
+        <Notice message={linked.error} />
+      ) : (linkedId ? !linked?.task : items.length === 0) ? (
         <EmptyState
           title="Здесь пока нет заданий"
           description="Добавьте первое задание или выберите другой фильтр."
           symbol="☑"
         />
       ) : (
-        items.map((task) => (
+        (linkedId && linked?.task ? [linked.task] : items).map((task) => (
           <View
             key={task.id}
             testID={`task-${task.id}`}
@@ -286,6 +311,12 @@ export function TasksWorkspace() {
               <Button secondary title="Изменить" disabled={busy} onPress={() => edit(task)} />
               <Button
                 secondary
+                title="Вложения"
+                disabled={busy}
+                onPress={() => setAttachments(task)}
+              />
+              <Button
+                secondary
                 title="История"
                 disabled={busy}
                 onPress={() => void showHistory(task)}
@@ -321,6 +352,15 @@ export function TasksWorkspace() {
             onPress={() => setPage(page + 1)}
           />
         </View>
+      )}
+      {attachments && (
+        <Dialog
+          visible
+          title={`Вложения · ${attachments.title}`}
+          onClose={() => setAttachments(null)}
+        >
+          <AttachmentPanel parent={{ kind: 'task', id: attachments.id }} canEdit />
+        </Dialog>
       )}
       <Dialog
         visible={!!editor}

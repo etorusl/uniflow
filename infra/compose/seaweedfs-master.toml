@@ -1,0 +1,3 @@
+[master.volume_growth]
+# One local volume server and one copy of each object. Grow in small increments.
+copy_1 = 1

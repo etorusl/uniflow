@@ -5,6 +5,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppShell } from '../shared/app-shell';
 import { colors } from '../shared/theme';
 import { AuthProvider } from '../features/auth/auth-context';
+import { NotificationBanner, NotificationInboxProvider } from '../features/notifications/inbox';
+import { NotificationResponseHandler } from '../features/notifications/response-handler';
 
 export function ErrorBoundary({ retry }: ErrorBoundaryProps) {
   return (
@@ -29,9 +31,13 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <StatusBar style="dark" />
       <AuthProvider>
-        <AppShell>
-          <Slot />
-        </AppShell>
+        <NotificationInboxProvider>
+          <AppShell>
+            <NotificationResponseHandler />
+            <NotificationBanner />
+            <Slot />
+          </AppShell>
+        </NotificationInboxProvider>
       </AuthProvider>
     </SafeAreaProvider>
   );

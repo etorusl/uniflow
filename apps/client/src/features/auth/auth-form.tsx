@@ -15,7 +15,27 @@ const titles: Record<Mode, string> = {
 };
 export function AuthForm({ mode }: { mode: Mode }) {
   const { login, refresh } = useAuth();
-  const params = useLocalSearchParams<{ token?: string }>();
+  const params = useLocalSearchParams<{
+    token?: string;
+    invite?: string;
+    groupId?: string;
+    taskId?: string;
+  }>();
+  const invite =
+    typeof params.invite === 'string' && /^[a-z0-9_-]{20}$/i.test(params.invite)
+      ? params.invite
+      : undefined;
+  const uuid = /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i;
+  const groupId =
+    typeof params.groupId === 'string' && uuid.test(params.groupId) ? params.groupId : undefined;
+  const taskId =
+    typeof params.taskId === 'string' && uuid.test(params.taskId) ? params.taskId : undefined;
+  const destination = { invite, groupId, taskId };
+  function goAfterLogin() {
+    if (invite || groupId) router.replace({ pathname: '/groups', params: destination });
+    else if (taskId) router.replace({ pathname: '/tasks', params: { taskId } });
+    else router.replace('/');
+  }
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
@@ -29,7 +49,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
     try {
       if (mode === 'login') {
         await login(email.trim().toLowerCase(), password);
-        router.replace('/');
+        goAfterLogin();
       } else if (mode === 'register') {
         resultData(
           await api.POST('/api/v1/auth/register', {
@@ -42,7 +62,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
           }),
         );
         await login(email.trim().toLowerCase(), password);
-        router.replace('/');
+        goAfterLogin();
       } else if (mode === 'forgot')
         setMessage(
           resultData(await api.POST('/api/v1/auth/forgot-password', { body: { email } })).message,
@@ -121,10 +141,10 @@ export function AuthForm({ mode }: { mode: Mode }) {
         />
       )}
       <View style={formStyles.row}>
-        <Link href="/login" style={formStyles.link}>
+        <Link href={{ pathname: '/login', params: destination }} style={formStyles.link}>
           Вход
         </Link>
-        <Link href="/register" style={formStyles.link}>
+        <Link href={{ pathname: '/register', params: destination }} style={formStyles.link}>
           Регистрация
         </Link>
         {mode === 'login' && (

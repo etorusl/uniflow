@@ -333,7 +333,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        get: operations["TasksController_get"];
         put?: never;
         post?: never;
         delete: operations["TasksController_remove"];
@@ -400,6 +400,454 @@ export interface paths {
         get: operations["StatisticsController_statistics"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/groups/tasks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AccessibleGroupTasksController_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/groups": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GroupsController_list"];
+        put?: never;
+        post: operations["GroupsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/groups/join": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["GroupsController_join"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/groups/{groupId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GroupsController_get"];
+        put?: never;
+        post?: never;
+        delete: operations["GroupsController_archive"];
+        options?: never;
+        head?: never;
+        patch: operations["GroupsController_update"];
+        trace?: never;
+    };
+    "/api/v1/groups/{groupId}/subject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["GroupsController_linkSubject"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/groups/{groupId}/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GroupsController_members"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/groups/{groupId}/members/{userId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["GroupsController_removeMember"];
+        options?: never;
+        head?: never;
+        patch: operations["GroupsController_setRole"];
+        trace?: never;
+    };
+    "/api/v1/groups/{groupId}/members/{userId}/unblock": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["GroupsController_unblock"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/groups/{groupId}/leave": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["GroupsController_leave"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/groups/{groupId}/transfer-ownership": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["GroupsController_transfer"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/groups/{groupId}/invitations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GroupsController_invitations"];
+        put?: never;
+        post: operations["GroupsController_invite"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/groups/{groupId}/invitations/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["GroupsController_revoke"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/groups/{groupId}/tasks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GroupTasksController_list"];
+        put?: never;
+        post: operations["GroupTasksController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/groups/{groupId}/tasks/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GroupTasksController_get"];
+        put?: never;
+        post?: never;
+        delete: operations["GroupTasksController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["GroupTasksController_update"];
+        trace?: never;
+    };
+    "/api/v1/groups/{groupId}/tasks/{id}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["GroupTasksController_complete"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/groups/{groupId}/tasks/{id}/reopen": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["GroupTasksController_reopen"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/groups/{groupId}/tasks/{id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GroupTasksController_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/groups/{groupId}/statistics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GroupTasksController_statistics"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/files/targets/{kind}/{parentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["FilesController_list"];
+        put?: never;
+        post: operations["FilesController_upload"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/files/{id}/content": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["FilesController_content"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/files/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["FilesController_remove"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/groups/{groupId}/materials": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GroupMaterialsController_list"];
+        put?: never;
+        post: operations["GroupMaterialsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/groups/{groupId}/materials/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["GroupMaterialsController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["GroupMaterialsController_update"];
+        trace?: never;
+    };
+    "/api/v1/notifications/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["NotificationsController_settings"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["NotificationsController_changeSettings"];
+        trace?: never;
+    };
+    "/api/v1/notifications/subscriptions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["NotificationsController_register"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications/subscriptions/{transport}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["NotificationsController_unsubscribe"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications/inbox": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["NotificationsController_inbox"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications/inbox/{id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["NotificationsController_read"];
         delete?: never;
         options?: never;
         head?: never;
@@ -647,6 +1095,237 @@ export interface components {
             completedLate: number;
             overdue: number;
             completionRate: number;
+        };
+        GroupTaskDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            description: string;
+            /** Format: date-time */
+            dueAt: string;
+            deadlineRevision: number;
+            /** Format: date-time */
+            completedAt: string | null;
+            /** Format: date-time */
+            deadlineAtCompletion: string | null;
+            /** @enum {string} */
+            status: "OPEN" | "OVERDUE" | "COMPLETED_ON_TIME" | "COMPLETED_LATE";
+            /** Format: uuid */
+            groupId: string;
+            groupName: string;
+            /** Format: uuid */
+            authorId: string | null;
+            authorName: string | null;
+            /** @enum {string} */
+            mode: "INDIVIDUAL" | "SHARED";
+            canComplete: boolean;
+            canEdit: boolean;
+            canDelete: boolean;
+        };
+        GroupTasksPageDto: {
+            items: components["schemas"]["GroupTaskDto"][];
+            total: number;
+        };
+        GroupDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            ownerId: string;
+            name: string;
+            subjectName: string;
+            description: string;
+            /** @enum {string} */
+            role: "OWNER" | "MODERATOR" | "MEMBER";
+            /** Format: uuid */
+            linkedSubjectId: string | null;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        GroupsPageDto: {
+            items: components["schemas"]["GroupDto"][];
+            total: number;
+        };
+        GroupInputDto: {
+            name: string;
+            subjectName: string;
+            description?: string;
+        };
+        GroupJoinInputDto: {
+            code: string;
+        };
+        GroupSubjectInputDto: {
+            /** Format: uuid */
+            subjectId: string | null;
+        };
+        GroupMemberDto: {
+            /** Format: uuid */
+            userId: string;
+            displayName: string;
+            /** @enum {string} */
+            role: "OWNER" | "MODERATOR" | "MEMBER";
+            /** Format: date-time */
+            joinedAt: string;
+            blocked: boolean;
+        };
+        GroupMembersPageDto: {
+            items: components["schemas"]["GroupMemberDto"][];
+            total: number;
+        };
+        GroupRoleInputDto: {
+            /** @enum {string} */
+            role: "MEMBER" | "MODERATOR";
+        };
+        TransferGroupInputDto: {
+            /** Format: uuid */
+            userId: string;
+        };
+        GroupInvitationDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            creatorId: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            expiresAt: string;
+            /** Format: date-time */
+            revokedAt: string | null;
+            maxUses: number;
+            uses: number;
+            canRevoke: boolean;
+        };
+        GroupInvitationsPageDto: {
+            items: components["schemas"]["GroupInvitationDto"][];
+            total: number;
+        };
+        GroupInvitationInputDto: {
+            /** @default 168 */
+            expiresInHours: number;
+            /** @default 25 */
+            maxUses: number;
+        };
+        NewGroupInvitationDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            creatorId: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            expiresAt: string;
+            /** Format: date-time */
+            revokedAt: string | null;
+            maxUses: number;
+            uses: number;
+            canRevoke: boolean;
+            code: string;
+            url: string;
+        };
+        NewGroupTaskInputDto: {
+            title: string;
+            description: string;
+            /** Format: date-time */
+            dueAt: string;
+            /** @enum {string} */
+            mode: "INDIVIDUAL" | "SHARED";
+        };
+        GroupTaskInputDto: {
+            title: string;
+            description: string;
+            /** Format: date-time */
+            dueAt: string;
+        };
+        GroupTaskEventDto: {
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            kind: "COMPLETED" | "REOPENED";
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            deadlineSnapshot: string;
+            actorName: string | null;
+        };
+        GroupTaskHistoryDto: {
+            items: components["schemas"]["GroupTaskEventDto"][];
+            total: number;
+        };
+        AttachmentDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            mimeType: string;
+            size: number;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        AttachmentsDto: {
+            items: components["schemas"]["AttachmentDto"][];
+        };
+        GroupMaterialDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            groupId: string;
+            /** Format: uuid */
+            authorId: string | null;
+            authorName: string | null;
+            title: string;
+            description: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            attachmentCount: number;
+        };
+        GroupMaterialsPageDto: {
+            items: components["schemas"]["GroupMaterialDto"][];
+            total: number;
+        };
+        GroupMaterialInputDto: {
+            title: string;
+            description: string;
+        };
+        ReminderSettingsDto: {
+            enabled: boolean;
+            minutesBefore: number;
+            androidAvailable: boolean;
+            webAvailable: boolean;
+            webPublicKey: string | null;
+            subscribed: ("WEB" | "ANDROID")[];
+        };
+        ReminderSettingsInputDto: {
+            enabled: boolean;
+            minutesBefore: number;
+        };
+        RegisterPushDto: {
+            /** @enum {string} */
+            transport: "WEB" | "ANDROID";
+            address: string;
+            p256dh?: string;
+            auth?: string;
+            /** @description Обновляет только активную подписку текущей сессии. */
+            refreshOnly?: boolean;
+        };
+        NotificationNoticeDto: {
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            kind: "PERSONAL" | "GROUP";
+            /** Format: uuid */
+            taskId: string;
+            /** Format: uuid */
+            groupId: string | null;
+            /** Format: date-time */
+            scheduledAt: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            readAt: string | null;
+        };
+        NotificationInboxDto: {
+            items: components["schemas"]["NotificationNoticeDto"][];
+            unreadCount: number;
         };
     };
     responses: never;
@@ -1381,6 +2060,27 @@ export interface operations {
             };
         };
     };
+    TasksController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaskDto"];
+                };
+            };
+        };
+    };
     TasksController_remove: {
         parameters: {
             query?: never;
@@ -1504,6 +2204,907 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["StatisticsDto"];
                 };
+            };
+        };
+    };
+    AccessibleGroupTasksController_list: {
+        parameters: {
+            query?: {
+                page?: number;
+                limit?: number;
+                status?: "ALL" | "OPEN" | "COMPLETED" | "OVERDUE";
+                mode?: "INDIVIDUAL" | "SHARED";
+                groupId?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupTasksPageDto"];
+                };
+            };
+        };
+    };
+    GroupsController_list: {
+        parameters: {
+            query?: {
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupsPageDto"];
+                };
+            };
+        };
+    };
+    GroupsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GroupInputDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupDto"];
+                };
+            };
+        };
+    };
+    GroupsController_join: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GroupJoinInputDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupDto"];
+                };
+            };
+        };
+    };
+    GroupsController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                groupId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupDto"];
+                };
+            };
+        };
+    };
+    GroupsController_archive: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                groupId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    GroupsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                groupId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GroupInputDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupDto"];
+                };
+            };
+        };
+    };
+    GroupsController_linkSubject: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                groupId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GroupSubjectInputDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupDto"];
+                };
+            };
+        };
+    };
+    GroupsController_members: {
+        parameters: {
+            query?: {
+                page?: number;
+                limit?: number;
+                status?: "ACTIVE" | "BLOCKED";
+            };
+            header?: never;
+            path: {
+                groupId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupMembersPageDto"];
+                };
+            };
+        };
+    };
+    GroupsController_removeMember: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                groupId: string;
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    GroupsController_setRole: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                groupId: string;
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GroupRoleInputDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    GroupsController_unblock: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                groupId: string;
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    GroupsController_leave: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                groupId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    GroupsController_transfer: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                groupId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TransferGroupInputDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupDto"];
+                };
+            };
+        };
+    };
+    GroupsController_invitations: {
+        parameters: {
+            query?: {
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                groupId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupInvitationsPageDto"];
+                };
+            };
+        };
+    };
+    GroupsController_invite: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                groupId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GroupInvitationInputDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NewGroupInvitationDto"];
+                };
+            };
+        };
+    };
+    GroupsController_revoke: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                groupId: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    GroupTasksController_list: {
+        parameters: {
+            query?: {
+                page?: number;
+                limit?: number;
+                status?: "ALL" | "OPEN" | "COMPLETED" | "OVERDUE";
+                mode?: "INDIVIDUAL" | "SHARED";
+            };
+            header?: never;
+            path: {
+                groupId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupTasksPageDto"];
+                };
+            };
+        };
+    };
+    GroupTasksController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                groupId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NewGroupTaskInputDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupTaskDto"];
+                };
+            };
+        };
+    };
+    GroupTasksController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                groupId: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupTaskDto"];
+                };
+            };
+        };
+    };
+    GroupTasksController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                groupId: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    GroupTasksController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                groupId: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GroupTaskInputDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupTaskDto"];
+                };
+            };
+        };
+    };
+    GroupTasksController_complete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                groupId: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupTaskDto"];
+                };
+            };
+        };
+    };
+    GroupTasksController_reopen: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                groupId: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupTaskDto"];
+                };
+            };
+        };
+    };
+    GroupTasksController_history: {
+        parameters: {
+            query?: {
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                groupId: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupTaskHistoryDto"];
+                };
+            };
+        };
+    };
+    GroupTasksController_statistics: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                groupId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StatisticsDto"];
+                };
+            };
+        };
+    };
+    FilesController_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                kind: "task" | "group-task" | "material";
+                parentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttachmentsDto"];
+                };
+            };
+        };
+    };
+    FilesController_upload: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                kind: "task" | "group-task" | "material";
+                parentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                    name?: string;
+                };
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttachmentDto"];
+                };
+            };
+        };
+    };
+    FilesController_content: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/octet-stream": string;
+                };
+            };
+        };
+    };
+    FilesController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    GroupMaterialsController_list: {
+        parameters: {
+            query?: {
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                groupId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupMaterialsPageDto"];
+                };
+            };
+        };
+    };
+    GroupMaterialsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                groupId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GroupMaterialInputDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupMaterialDto"];
+                };
+            };
+        };
+    };
+    GroupMaterialsController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                groupId: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    GroupMaterialsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                groupId: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GroupMaterialInputDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupMaterialDto"];
+                };
+            };
+        };
+    };
+    NotificationsController_settings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReminderSettingsDto"];
+                };
+            };
+        };
+    };
+    NotificationsController_changeSettings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReminderSettingsInputDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReminderSettingsDto"];
+                };
+            };
+        };
+    };
+    NotificationsController_register: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterPushDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    NotificationsController_unsubscribe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                transport: "WEB" | "ANDROID";
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    NotificationsController_inbox: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationInboxDto"];
+                };
+            };
+        };
+    };
+    NotificationsController_read: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
