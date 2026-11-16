@@ -30,7 +30,7 @@ export default defineConfig({
       timeout: 30000,
     },
     {
-      command: 'pnpm dev:web',
+      command: process.env.CI ? 'pnpm preview:web' : 'pnpm dev:web',
       url: 'http://localhost:8081',
       reuseExistingServer: !process.env.CI,
       timeout: 90000,
