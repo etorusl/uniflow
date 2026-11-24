@@ -1,19 +1,18 @@
 # Техническое задание UniFlow
 
-- [Документ Word](deliverables/uniflow-design.docx)
-- [Документ PDF](deliverables/uniflow-design.pdf)
-- [Figma](https://www.figma.com/design/xhrjwC2FwiIhOd8yTNtP58)
+Документация приложения Android.
 
-## Разделы
+- [Word](deliverables/uniflow-design.docx)
+- [PDF](deliverables/uniflow-design.pdf)
+- [Назначение](01-overview.md)
+- [Функции](02-functional.md)
+- [Интерфейс Android](03-interface.md)
+- [Архитектура](04-architecture.md)
+- [База данных](05-database.md)
+- [Безопасность](06-security.md)
+- [API](07-api.md)
+- [OpenAPI](openapi.json)
+- [HTML-справочник API](api-reference.html)
+- [Мобильный макет](design/mobile.png)
 
-1. [Назначение и границы](01-overview.md)
-2. [Функциональные сценарии](02-functional.md)
-3. [Интерфейс](03-interface.md)
-4. [Архитектура](04-architecture.md)
-5. [База данных](05-database.md)
-6. [Безопасность](06-security.md)
-7. [Справочник API](07-api.md)
-
-[HTML-справочник API](api-reference.html) открывается после скачивания. [OpenAPI JSON](openapi.json) сохранён из исходного проекта. [Макеты и схемы](design) приложены отдельно.
-
-Содержимое Word, PDF, схем и макетов сохранено из исходного комплекта. Для автономного просмотра перенесён контракт API. В Markdown обновлены ссылки, которые выходили за пределы этой папки.
+OpenAPI описывает Android-представление серверного контракта. Общие ошибки добавлены по типам операций. Новые запросы к серверу при редактуре не выполнялись.
