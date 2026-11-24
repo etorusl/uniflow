@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="820" viewBox="0 0 1500 820"><rect width="100%" height="100%" fill="white"/>
+<text x="40" y="56" font-family="Arial,sans-serif" font-size="32" font-weight="700" fill="#17223B">Связи файлов и уведомлений</text>
+<rect x="40" y="120" width="320" height="100" rx="14" fill="#F5F6FA" stroke="#737B8E" stroke-width="2"/>
+<text x="58" y="160" font-family="Arial,sans-serif" font-size="25" font-weight="700" fill="#17223B">Task / GroupTask</text>
+<text x="58" y="196" font-family="Arial,sans-serif" font-size="20" font-weight="400" fill="#17223B">Родитель задания</text>
+<rect x="540" y="120" width="320" height="100" rx="14" fill="#F5F6FA" stroke="#737B8E" stroke-width="2"/>
+<text x="558" y="160" font-family="Arial,sans-serif" font-size="25" font-weight="700" fill="#17223B">Attachment</text>
+<text x="558" y="196" font-family="Arial,sans-serif" font-size="20" font-weight="400" fill="#17223B">Не более одного родителя</text>
+<rect x="1040" y="120" width="320" height="100" rx="14" fill="#F5F6FA" stroke="#737B8E" stroke-width="2"/>
+<text x="1058" y="160" font-family="Arial,sans-serif" font-size="25" font-weight="700" fill="#17223B">GroupMaterial</text>
+<text x="1058" y="196" font-family="Arial,sans-serif" font-size="20" font-weight="400" fill="#17223B">Родитель материала</text>
+<rect x="40" y="380" width="320" height="100" rx="14" fill="#F5F6FA" stroke="#737B8E" stroke-width="2"/>
+<text x="58" y="420" font-family="Arial,sans-serif" font-size="25" font-weight="700" fill="#17223B">User</text>
+<text x="58" y="456" font-family="Arial,sans-serif" font-size="20" font-weight="400" fill="#17223B">Получатель</text>
+<rect x="540" y="380" width="320" height="100" rx="14" fill="#F5F6FA" stroke="#737B8E" stroke-width="2"/>
+<text x="558" y="420" font-family="Arial,sans-serif" font-size="25" font-weight="700" fill="#17223B">PushSubscription</text>
+<text x="558" y="456" font-family="Arial,sans-serif" font-size="20" font-weight="400" fill="#17223B">Ссылка на User и Session</text>
+<rect x="1040" y="380" width="320" height="100" rx="14" fill="#F5F6FA" stroke="#737B8E" stroke-width="2"/>
+<text x="1058" y="420" font-family="Arial,sans-serif" font-size="25" font-weight="700" fill="#17223B">ReminderDelivery</text>
+<text x="1058" y="456" font-family="Arial,sans-serif" font-size="20" font-weight="400" fill="#17223B">Ключ подписки и поколения</text>
+<rect x="40" y="620" width="320" height="100" rx="14" fill="#F5F6FA" stroke="#737B8E" stroke-width="2"/>
+<text x="58" y="660" font-family="Arial,sans-serif" font-size="25" font-weight="700" fill="#17223B">ReminderPreference</text>
+<text x="58" y="696" font-family="Arial,sans-serif" font-size="20" font-weight="400" fill="#17223B">userId — уникален</text>
+<rect x="540" y="620" width="320" height="100" rx="14" fill="#F5F6FA" stroke="#737B8E" stroke-width="2"/>
+<text x="558" y="660" font-family="Arial,sans-serif" font-size="25" font-weight="700" fill="#17223B">ReminderNotice</text>
+<text x="558" y="696" font-family="Arial,sans-serif" font-size="20" font-weight="400" fill="#17223B">userId; kind; taskId</text>
+<rect x="1040" y="620" width="320" height="100" rx="14" fill="#F5F6FA" stroke="#737B8E" stroke-width="2"/>
+<text x="1058" y="660" font-family="Arial,sans-serif" font-size="25" font-weight="700" fill="#17223B">ReminderRevision</text>
+<text x="1058" y="696" font-family="Arial,sans-serif" font-size="20" font-weight="400" fill="#17223B">key; version</text>
+<polyline points="360,170 540,170" fill="none" stroke="#6554D9" stroke-width="3"/>
+<polygon points="540,170 529.1946347717678,175.21958640933477 529.1946347717678,164.78041359066523" fill="#6554D9"/>
+<text x="428.5" y="160.0" font-family="Arial,sans-serif" font-size="20" font-weight="400" fill="#17223B">1 : N</text>
+<polyline points="1040,170 860,170" fill="none" stroke="#6554D9" stroke-width="3"/>
+<polygon points="860,170 870.8053652282322,164.78041359066523 870.8053652282322,175.21958640933477" fill="#6554D9"/>
+<text x="928.5" y="160.0" font-family="Arial,sans-serif" font-size="20" font-weight="400" fill="#17223B">1 : N</text>
+<polyline points="360,430 540,430" fill="none" stroke="#6554D9" stroke-width="3"/>
+<polygon points="540,430 529.1946347717678,435.21958640933474 529.1946347717678,424.78041359066526" fill="#6554D9"/>
+<text x="428.5" y="420.0" font-family="Arial,sans-serif" font-size="20" font-weight="400" fill="#17223B">1 : N</text>
+<polyline points="860,430 1040,430" fill="none" stroke="#6554D9" stroke-width="3"/>
+<polygon points="1040,430 1029.1946347717678,435.21958640933474 1029.1946347717678,424.78041359066526" fill="#6554D9"/>
+<text x="928.5" y="420.0" font-family="Arial,sans-serif" font-size="20" font-weight="400" fill="#17223B">1 : N</text>
+<polyline points="200,480 200,620" fill="none" stroke="#6554D9" stroke-width="3"/>
+<polygon points="200,620 194.78041359066523,609.1946347717678 205.21958640933477,609.1946347717678" fill="#6554D9"/>
+<text x="208.0" y="560.0" font-family="Arial,sans-serif" font-size="20" font-weight="400" fill="#17223B">1 : 0..1</text>
+<polyline points="360,460 450,460 450,670 540,670" fill="none" stroke="#6554D9" stroke-width="3"/>
+<polygon points="540,670 529.1946347717678,675.2195864093347 529.1946347717678,664.7804135906653" fill="#6554D9"/>
+<text x="458.0" y="575.0" font-family="Arial,sans-serif" font-size="20" font-weight="400" fill="#17223B">1 : N</text>
+<text x="40" y="794" font-family="Arial,sans-serif" font-size="24" font-weight="400" fill="#17223B">kind + taskId — полиморфная ссылка на задание, без прямого внешнего ключа.</text>
+</svg>

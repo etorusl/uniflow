@@ -1,0 +1,634 @@
+<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>UniFlow API</title><style>body{font:16px/1.65 system-ui,sans-serif;max-width:1100px;margin:40px auto;padding:0 24px;color:#17223b}h1,h2,h3{line-height:1.3}h2{margin-top:56px}h3{margin-top:36px;overflow-wrap:anywhere}table{border-collapse:collapse;width:100%;margin:20px 0;font-size:14px}th,td{padding:10px 12px;border:1px solid #e5e8ef;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#f5f6fa}pre{background:#f5f6fa;padding:20px;overflow:auto}code{font:13px ui-monospace,monospace;overflow-wrap:anywhere}a{color:#6554d9}input{position:sticky;top:12px;width:100%;padding:14px;box-sizing:border-box;border:1px solid #dce0e9;border-radius:10px;background:white}@media print{input{display:none}h2,h3{break-after:avoid}tr{break-inside:avoid}}</style><h1>UniFlow API</h1><p>Локальный справочник. Используйте поиск браузера для перехода к методу или DTO.</p><input type="search" aria-label="Найти текст" placeholder="Поиск по странице — Enter" onkeydown="if(event.key==='Enter')window.find(this.value)"><h1 id="Документация-REST-API">Документация REST API</h1>
+<h2 id="Адрес-и-контракт">Адрес и контракт</h2>
+<p>Локальный HTTP API: <code>http://127.0.0.1:3000/api/v1</code>. Swagger UI: <code>http://127.0.0.1:3000/api/docs</code>, JSON: <code>http://127.0.0.1:3000/api/openapi.json</code>; эти два маршрута документации включены вне production. Сохранённый контракт находится в <code>apps/server/openapi.json</code>, типы клиента — в <code>packages/api-client/src/schema.d.ts</code>.</p>
+<p>Справочник ниже построен из существующего OpenAPI и дополнен правилами авторизации из контроллеров и сервисов. Его HTML-копия <code>api-reference.html</code> открывается без запуска сервера и без внешних библиотек. Swagger остаётся исполняемой формой документации при работающем API.</p>
+<h2 id="Общие-правила-запросов">Общие правила запросов</h2>
+<p>Тела обычных запросов имеют <code>Content-Type: application/json</code>. UUID передаются строками; даты календаря — <code>YYYY-MM-DD</code>, локальное время — <code>HH:mm</code>, абсолютные сроки — ISO 8601 с <code>Z</code> или явным часовым смещением. День недели — 1–7, начиная с понедельника.</p>
+<p>Большинство списков использует <code>page</code> от 1 до 10 000 и <code>limit</code> от 1 до 100; значения по умолчанию — 1 и 100. Ответ — <code>{items, total}</code>. Календарь, история личного задания, список вложений и входящие имеют собственные форматы и не получают пагинацию автоматически. Диапазон календаря задают обязательные <code>from</code> и <code>to</code>.</p>
+<p>PATCH-методы передают поля согласно своему DTO. Это не универсальный JSON Merge Patch: например, профиль требует имя и часовой пояс, личное задание — название, описание и срок, а групповой PATCH не допускает смену режима выполнения. Неизвестные поля отклоняются глобальной валидацией.</p>
+<h2 id="Передача-сессии-и-права">Передача сессии и права</h2>
+<p>Без сессии доступны health и четыре операции аккаунта: регистрация, вход, запрос письма и установка нового пароля. Все остальные методы требуют действующую сессию. Веб использует <code>uniflow_session</code> HttpOnly cookie и <code>credentials: include</code>; изменяющий запрос дополнительно содержит допустимый <code>Origin</code> и <code>x-csrf-token</code>. Android при входе передаёт <code>x-uniflow-client: native</code>, затем использует <code>Authorization: Bearer &lt;token&gt;</code>.</p>
+<p><code>GET /auth/session</code> возвращает профиль и CSRF-токен для cookie-сессии. Нативный токен выдаётся только при входе. Владелец личного ресурса определяется по сессии, членство и роль группы проверяются сервером. Схемы security в сохранённом OpenAPI описывают механизмы cookie/Bearer, но не прикреплены ко всем операциям как полноценная матрица прав; для прав применяются описания этого справочника и раздел безопасности.</p>
+<h2 id="Формат-ошибок">Формат ошибок</h2>
+<pre><code>{
+  &quot;error&quot;: {
+    &quot;code&quot;: &quot;FORBIDDEN&quot;,
+    &quot;message&quot;: &quot;Недостаточно прав для этого действия.&quot;,
+    &quot;requestId&quot;: &quot;example-request-id&quot;
+  }
+}</code></pre>
+<p>Коды исполнения: <code>400</code> — валидация или недействительная операция; <code>401</code> — нет действующей сессии или неверный вход; <code>403</code> — запрещённое действие/CSRF; <code>404</code> — отсутствующий или скрытый ресурс; <code>409</code> — конфликт уникальности, связи или владения; <code>413</code> — превышение лимита загрузки; <code>429</code> — ограничение частоты; <code>500</code> — безопасное сообщение о внутреннем сбое; <code>503</code> — неготовность зависимостей. Перечень в OpenAPI у каждого метода может быть уже фактических ошибок guard и сервисов. Таблица ответов метода ниже дословно сохраняет объявленные контрактом коды и не обещает, что других ответов исполнения не бывает.</p>
+<h2 id="Примеры-обмена">Примеры обмена</h2>
+<p>Регистрация создаёт аккаунт, а не сессию. В интерфейсе за ней выполняется отдельный вход.</p>
+<pre><code>{
+  &quot;email&quot;: &quot;student@example.com&quot;,
+  &quot;password&quot;: &quot;example-password-2026&quot;,
+  &quot;displayName&quot;: &quot;Алексей&quot;,
+  &quot;timeZone&quot;: &quot;Asia/Novosibirsk&quot;
+}</code></pre>
+<p>Тело <code>POST /auth/register</code> выше. Ответ <code>200</code>: <code>{&quot;message&quot;:&quot;Аккаунт создан. Можно войти.&quot;}</code>. Запрос входа содержит email и пароль; веб получает <code>{user, csrfToken}</code> и Set-Cookie, native — <code>{user, token}</code>.</p>
+<p>Пример тела <code>POST /tasks</code>:</p>
+<pre><code>{
+  &quot;title&quot;: &quot;Лабораторная работа № 3&quot;,
+  &quot;description&quot;: &quot;Подготовить SQL-запросы и отчёт&quot;,
+  &quot;dueAt&quot;: &quot;2026-11-25T18:00:00+07:00&quot;,
+  &quot;subjectId&quot;: null
+}</code></pre>
+<p>Ответ <code>200</code> имеет тип <code>TaskDto</code>, включая созданный UUID, <code>completedAt: null</code>, <code>deadlineAtCompletion: null</code>, <code>deadlineRevision</code> и вычисленный <code>status</code>. Повторное выполнение <code>POST /tasks/{id}/complete</code> возвращает то же текущее состояние без второй записи события. Создание нового задания не имеет общей защиты от дублирования по idempotency key.</p>
+<p>Для <code>POST /groups/{groupId}/tasks</code> тело аналогично, но вместо личного <code>subjectId</code> при создании передаётся <code>mode: &quot;INDIVIDUAL&quot;</code> либо <code>&quot;SHARED&quot;</code>; ответ — <code>201 GroupTaskDto</code>. Сводный маршрут <code>/groups/tasks</code> возвращает видимые задания всех действующих групп.</p>
+<p>Пример <code>PUT /schedule/entries/{id}/exceptions/{date}</code> для отмены: <code>{&quot;cancelled&quot;:true}</code>. Для переноса: <code>{&quot;cancelled&quot;:false,&quot;replacementDate&quot;:&quot;2026-11-26&quot;,&quot;startTime&quot;:&quot;11:00&quot;,&quot;endTime&quot;:&quot;12:30&quot;}</code>. Исходная и новая даты должны относиться к допустимому занятию/семестру.</p>
+<p>Загрузка <code>POST /files/targets/{kind}/{parentId}</code> использует multipart/form-data с обязательным бинарным полем <code>file</code> и необязательным <code>name</code> до 240 символов. <code>kind</code> принимает <code>task</code>, <code>group-task</code>, <code>material</code>. Заголовок multipart с boundary формирует HTTP-клиент. Ответ <code>201</code> содержит <code>AttachmentDto</code>; байты выдаёт <code>GET /files/{id}/content</code>. Разрешены PDF, TXT UTF-8, JPEG, PNG, WebP, не более 10 МиБ на файл.</p>
+<p>Пример настройки <code>PATCH /notifications/settings</code>: <code>{&quot;enabled&quot;:true,&quot;minutesBefore&quot;:60}</code>. Входящие содержат последние 30 доступных записей и счётчик непрочитанных среди них. Подписки внешних каналов требуют настроенного провайдера и разрешения устройства.</p>
+<h2 id="Ограничения-предметных-данных">Ограничения предметных данных</h2>
+<p>Регистрация: пароль 12–128 символов, имя 2–80, email до 254. Задание: название 1–200 символов, описание до 5000. Группа: название и предмет 1–100, описание до 1000. Приглашение: 20 символов секрета, срок 1–720 часов и лимит 1–250 вступлений. Настройки напоминаний: целое смещение 1–10 080 минут.</p>
+<p>Некоторые ограничения class-validator не представлены в Swagger-декораторах. Таблицы схем ниже показывают сведения сохранённого OpenAPI, а проверка DTO и сервисов остаётся обязательной. Особые правила: <code>weekStartDate</code> — понедельник не позднее начала семестра, семестр — от 1 до 367 дней; конец пары позже начала в пределах суток; режим опубликованного группового задания неизменяем.</p>
+<h2 id="Полный-каталог-методов">Полный каталог методов</h2>
+<p>Контракт содержит 77 HTTP-операций и 61 именованную схему. Префикс <code>/api/v1</code> в таблице сохранён.</p>
+<table><thead><tr><th>Метод</th><th>Путь</th><th>Назначение</th></tr></thead><tbody><tr><td>GET</td><td><code>/api/v1/health/live</code></td><td>Проверить HTTP-процесс</td></tr><tr><td>GET</td><td><code>/api/v1/health/ready</code></td><td>Проверить готовность зависимостей</td></tr><tr><td>POST</td><td><code>/api/v1/auth/register</code></td><td>Зарегистрировать аккаунт</td></tr><tr><td>POST</td><td><code>/api/v1/auth/login</code></td><td>Войти и создать сессию</td></tr><tr><td>GET</td><td><code>/api/v1/auth/session</code></td><td>Получить текущую сессию</td></tr><tr><td>POST</td><td><code>/api/v1/auth/logout</code></td><td>Завершить текущую сессию</td></tr><tr><td>POST</td><td><code>/api/v1/auth/forgot-password</code></td><td>Запросить письмо восстановления</td></tr><tr><td>POST</td><td><code>/api/v1/auth/reset-password</code></td><td>Установить новый пароль</td></tr><tr><td>PATCH</td><td><code>/api/v1/users/me</code></td><td>Обновить имя и часовой пояс</td></tr><tr><td>GET</td><td><code>/api/v1/subjects</code></td><td>Получить личные предметы</td></tr><tr><td>POST</td><td><code>/api/v1/subjects</code></td><td>Создать личные предметы</td></tr><tr><td>PATCH</td><td><code>/api/v1/subjects/{id}</code></td><td>Изменить личные предметы</td></tr><tr><td>DELETE</td><td><code>/api/v1/subjects/{id}</code></td><td>Удалить личные предметы</td></tr><tr><td>GET</td><td><code>/api/v1/teachers</code></td><td>Получить личные преподаватели</td></tr><tr><td>POST</td><td><code>/api/v1/teachers</code></td><td>Создать личные преподаватели</td></tr><tr><td>PATCH</td><td><code>/api/v1/teachers/{id}</code></td><td>Изменить личные преподаватели</td></tr><tr><td>DELETE</td><td><code>/api/v1/teachers/{id}</code></td><td>Удалить личные преподаватели</td></tr><tr><td>GET</td><td><code>/api/v1/schedule/entries</code></td><td>Получить шаблоны пар</td></tr><tr><td>POST</td><td><code>/api/v1/schedule/entries</code></td><td>Создать шаблоны пар</td></tr><tr><td>PATCH</td><td><code>/api/v1/schedule/entries/{id}</code></td><td>Изменить шаблоны пар</td></tr><tr><td>DELETE</td><td><code>/api/v1/schedule/entries/{id}</code></td><td>Удалить шаблоны пар</td></tr><tr><td>GET</td><td><code>/api/v1/schedule/occurrences</code></td><td>Получить конкретные занятия периода</td></tr><tr><td>PUT</td><td><code>/api/v1/schedule/entries/{id}/exceptions/{date}</code></td><td>Сохранить отмену или перенос</td></tr><tr><td>DELETE</td><td><code>/api/v1/schedule/entries/{id}/exceptions/{date}</code></td><td>Восстановить исходное занятие</td></tr><tr><td>GET</td><td><code>/api/v1/semesters</code></td><td>Получить семестры</td></tr><tr><td>POST</td><td><code>/api/v1/semesters</code></td><td>Создать семестры</td></tr><tr><td>PATCH</td><td><code>/api/v1/semesters/{id}</code></td><td>Изменить семестры</td></tr><tr><td>DELETE</td><td><code>/api/v1/semesters/{id}</code></td><td>Удалить семестры</td></tr><tr><td>GET</td><td><code>/api/v1/tasks</code></td><td>Получить задания</td></tr><tr><td>POST</td><td><code>/api/v1/tasks</code></td><td>Создать задания</td></tr><tr><td>GET</td><td><code>/api/v1/tasks/{id}</code></td><td>Получить задания</td></tr><tr><td>PATCH</td><td><code>/api/v1/tasks/{id}</code></td><td>Изменить задания</td></tr><tr><td>DELETE</td><td><code>/api/v1/tasks/{id}</code></td><td>Удалить задания</td></tr><tr><td>POST</td><td><code>/api/v1/tasks/{id}/complete</code></td><td>Отметить выполнение задания</td></tr><tr><td>POST</td><td><code>/api/v1/tasks/{id}/reopen</code></td><td>Вернуть задание в работу</td></tr><tr><td>GET</td><td><code>/api/v1/tasks/{id}/history</code></td><td>Получить историю выполнения</td></tr><tr><td>GET</td><td><code>/api/v1/statistics/me</code></td><td>Получить личный прогресс</td></tr><tr><td>GET</td><td><code>/api/v1/groups/tasks</code></td><td>Задания всех действующих групп</td></tr><tr><td>GET</td><td><code>/api/v1/groups</code></td><td>Получить группы</td></tr><tr><td>POST</td><td><code>/api/v1/groups</code></td><td>Создать группы</td></tr><tr><td>POST</td><td><code>/api/v1/groups/join</code></td><td>Принять приглашение</td></tr><tr><td>GET</td><td><code>/api/v1/groups/{groupId}</code></td><td>Получить группы</td></tr><tr><td>PATCH</td><td><code>/api/v1/groups/{groupId}</code></td><td>Изменить группы</td></tr><tr><td>DELETE</td><td><code>/api/v1/groups/{groupId}</code></td><td>Архивировать группу</td></tr><tr><td>PUT</td><td><code>/api/v1/groups/{groupId}/subject</code></td><td>Связать группу с личным предметом</td></tr><tr><td>GET</td><td><code>/api/v1/groups/{groupId}/members</code></td><td>Получить участники группы</td></tr><tr><td>PATCH</td><td><code>/api/v1/groups/{groupId}/members/{userId}</code></td><td>Назначить или снять роль модератора</td></tr><tr><td>DELETE</td><td><code>/api/v1/groups/{groupId}/members/{userId}</code></td><td>Исключить и заблокировать участника</td></tr><tr><td>POST</td><td><code>/api/v1/groups/{groupId}/members/{userId}/unblock</code></td><td>Снять блокировку вступления</td></tr><tr><td>POST</td><td><code>/api/v1/groups/{groupId}/leave</code></td><td>Выйти из группы</td></tr><tr><td>POST</td><td><code>/api/v1/groups/{groupId}/transfer-ownership</code></td><td>Передать владение группой</td></tr><tr><td>GET</td><td><code>/api/v1/groups/{groupId}/invitations</code></td><td>Получить приглашения</td></tr><tr><td>POST</td><td><code>/api/v1/groups/{groupId}/invitations</code></td><td>Создать приглашения</td></tr><tr><td>DELETE</td><td><code>/api/v1/groups/{groupId}/invitations/{id}</code></td><td>Отозвать приглашение</td></tr><tr><td>GET</td><td><code>/api/v1/groups/{groupId}/tasks</code></td><td>Получить задания</td></tr><tr><td>POST</td><td><code>/api/v1/groups/{groupId}/tasks</code></td><td>Создать задания</td></tr><tr><td>GET</td><td><code>/api/v1/groups/{groupId}/tasks/{id}</code></td><td>Получить задания</td></tr><tr><td>PATCH</td><td><code>/api/v1/groups/{groupId}/tasks/{id}</code></td><td>Изменить задания</td></tr><tr><td>DELETE</td><td><code>/api/v1/groups/{groupId}/tasks/{id}</code></td><td>Удалить задания</td></tr><tr><td>POST</td><td><code>/api/v1/groups/{groupId}/tasks/{id}/complete</code></td><td>Отметить выполнение задания</td></tr><tr><td>POST</td><td><code>/api/v1/groups/{groupId}/tasks/{id}/reopen</code></td><td>Вернуть задание в работу</td></tr><tr><td>GET</td><td><code>/api/v1/groups/{groupId}/tasks/{id}/history</code></td><td>Получить историю выполнения</td></tr><tr><td>GET</td><td><code>/api/v1/groups/{groupId}/statistics</code></td><td>Получить прогресс общих заданий группы</td></tr><tr><td>GET</td><td><code>/api/v1/files/targets/{kind}/{parentId}</code></td><td>Получить список готовых вложений</td></tr><tr><td>POST</td><td><code>/api/v1/files/targets/{kind}/{parentId}</code></td><td>Загрузить файл в публикацию</td></tr><tr><td>GET</td><td><code>/api/v1/files/{id}/content</code></td><td>Скачать байты вложения</td></tr><tr><td>DELETE</td><td><code>/api/v1/files/{id}</code></td><td>Удалить вложения</td></tr><tr><td>GET</td><td><code>/api/v1/groups/{groupId}/materials</code></td><td>Получить материалы группы</td></tr><tr><td>POST</td><td><code>/api/v1/groups/{groupId}/materials</code></td><td>Создать материалы группы</td></tr><tr><td>PATCH</td><td><code>/api/v1/groups/{groupId}/materials/{id}</code></td><td>Изменить материалы группы</td></tr><tr><td>DELETE</td><td><code>/api/v1/groups/{groupId}/materials/{id}</code></td><td>Удалить материалы группы</td></tr><tr><td>GET</td><td><code>/api/v1/notifications/settings</code></td><td>Получить настройки и доступность каналов</td></tr><tr><td>PATCH</td><td><code>/api/v1/notifications/settings</code></td><td>Сохранить настройки напоминаний</td></tr><tr><td>POST</td><td><code>/api/v1/notifications/subscriptions</code></td><td>Зарегистрировать подписку текущей сессии</td></tr><tr><td>DELETE</td><td><code>/api/v1/notifications/subscriptions/{transport}</code></td><td>Отключить подписки текущей сессии и платформы</td></tr><tr><td>GET</td><td><code>/api/v1/notifications/inbox</code></td><td>Получить последние 30 входящих напоминаний</td></tr><tr><td>POST</td><td><code>/api/v1/notifications/inbox/{id}/read</code></td><td>Пометить напоминание прочитанным</td></tr></tbody></table>
+<h2 id="Параметры-тела-и-ответы-методов">Параметры тела и ответы методов</h2>
+<h3 id="GET--api-v1-health-live">GET /api/v1/health/live</h3>
+<p>Проверить HTTP-процесс.</p>
+<p><strong>Доступ:</strong> Без сессии.</p>
+<p>Параметры пути и query отсутствуют.</p>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: HealthDto</td></tr></tbody></table>
+<h3 id="GET--api-v1-health-ready">GET /api/v1/health/ready</h3>
+<p>Проверить готовность зависимостей.</p>
+<p><strong>Доступ:</strong> Без сессии.</p>
+<p>Параметры пути и query отсутствуют.</p>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: HealthDto</td></tr><tr><td>503</td><td>application/json: ApiErrorDto</td></tr></tbody></table>
+<h3 id="POST--api-v1-auth-register">POST /api/v1/auth/register</h3>
+<p>Зарегистрировать аккаунт.</p>
+<p><strong>Доступ:</strong> Без сессии.</p>
+<p>Параметры пути и query отсутствуют.</p>
+<p><strong>Тело:</strong> <code>application/json</code>, схема <code>RegisterDto</code>.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: MessageDto</td></tr><tr><td>400</td><td>application/json: ApiErrorDto</td></tr></tbody></table>
+<h3 id="POST--api-v1-auth-login">POST /api/v1/auth/login</h3>
+<p>Войти и создать сессию.</p>
+<p><strong>Доступ:</strong> Без сессии.</p>
+<p>Параметры пути и query отсутствуют.</p>
+<p><strong>Тело:</strong> <code>application/json</code>, схема <code>LoginDto</code>.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: SessionDto</td></tr><tr><td>400</td><td>application/json: ApiErrorDto</td></tr><tr><td>401</td><td>application/json: ApiErrorDto</td></tr></tbody></table>
+<h3 id="GET--api-v1-auth-session">GET /api/v1/auth/session</h3>
+<p>Получить текущую сессию.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<p>Параметры пути и query отсутствуют.</p>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: SessionDto</td></tr><tr><td>400</td><td>application/json: ApiErrorDto</td></tr></tbody></table>
+<h3 id="POST--api-v1-auth-logout">POST /api/v1/auth/logout</h3>
+<p>Завершить текущую сессию.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<p>Параметры пути и query отсутствуют.</p>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: MessageDto</td></tr><tr><td>400</td><td>application/json: ApiErrorDto</td></tr></tbody></table>
+<h3 id="POST--api-v1-auth-forgot-password">POST /api/v1/auth/forgot-password</h3>
+<p>Запросить письмо восстановления.</p>
+<p><strong>Доступ:</strong> Без сессии.</p>
+<p>Параметры пути и query отсутствуют.</p>
+<p><strong>Тело:</strong> <code>application/json</code>, схема <code>EmailDto</code>.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: MessageDto</td></tr><tr><td>400</td><td>application/json: ApiErrorDto</td></tr></tbody></table>
+<h3 id="POST--api-v1-auth-reset-password">POST /api/v1/auth/reset-password</h3>
+<p>Установить новый пароль.</p>
+<p><strong>Доступ:</strong> Без сессии.</p>
+<p>Параметры пути и query отсутствуют.</p>
+<p><strong>Тело:</strong> <code>application/json</code>, схема <code>ResetPasswordDto</code>.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: MessageDto</td></tr><tr><td>400</td><td>application/json: ApiErrorDto</td></tr></tbody></table>
+<h3 id="PATCH--api-v1-users-me">PATCH /api/v1/users/me</h3>
+<p>Обновить имя и часовой пояс.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<p>Параметры пути и query отсутствуют.</p>
+<p><strong>Тело:</strong> <code>application/json</code>, схема <code>ProfileDto</code>.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: UserDto</td></tr></tbody></table>
+<h3 id="GET--api-v1-subjects">GET /api/v1/subjects</h3>
+<p>Получить личные предметы.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>page</td><td>query</td><td>Нет</td><td>number; minimum=1; default=1</td></tr><tr><td>limit</td><td>query</td><td>Нет</td><td>number; minimum=1; maximum=100; default=100</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: SubjectsPageDto</td></tr></tbody></table>
+<h3 id="POST--api-v1-subjects">POST /api/v1/subjects</h3>
+<p>Создать личные предметы.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<p>Параметры пути и query отсутствуют.</p>
+<p><strong>Тело:</strong> <code>application/json</code>, схема <code>SubjectInputDto</code>.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: SubjectDto</td></tr></tbody></table>
+<h3 id="PATCH--api-v1-subjects--id">PATCH /api/v1/subjects/{id}</h3>
+<p>Изменить личные предметы.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>id</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p><strong>Тело:</strong> <code>application/json</code>, схема <code>SubjectInputDto</code>.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: SubjectDto</td></tr></tbody></table>
+<h3 id="DELETE--api-v1-subjects--id">DELETE /api/v1/subjects/{id}</h3>
+<p>Удалить личные предметы.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>id</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>204</td><td>Без тела</td></tr></tbody></table>
+<h3 id="GET--api-v1-teachers">GET /api/v1/teachers</h3>
+<p>Получить личные преподаватели.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>page</td><td>query</td><td>Нет</td><td>number; minimum=1; default=1</td></tr><tr><td>limit</td><td>query</td><td>Нет</td><td>number; minimum=1; maximum=100; default=100</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: TeachersPageDto</td></tr></tbody></table>
+<h3 id="POST--api-v1-teachers">POST /api/v1/teachers</h3>
+<p>Создать личные преподаватели.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<p>Параметры пути и query отсутствуют.</p>
+<p><strong>Тело:</strong> <code>application/json</code>, схема <code>TeacherInputDto</code>.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: TeacherDto</td></tr></tbody></table>
+<h3 id="PATCH--api-v1-teachers--id">PATCH /api/v1/teachers/{id}</h3>
+<p>Изменить личные преподаватели.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>id</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p><strong>Тело:</strong> <code>application/json</code>, схема <code>TeacherInputDto</code>.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: TeacherDto</td></tr></tbody></table>
+<h3 id="DELETE--api-v1-teachers--id">DELETE /api/v1/teachers/{id}</h3>
+<p>Удалить личные преподаватели.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>id</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>204</td><td>Без тела</td></tr></tbody></table>
+<h3 id="GET--api-v1-schedule-entries">GET /api/v1/schedule/entries</h3>
+<p>Получить шаблоны пар.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>page</td><td>query</td><td>Нет</td><td>number; minimum=1; default=1</td></tr><tr><td>limit</td><td>query</td><td>Нет</td><td>number; minimum=1; maximum=100; default=100</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: EntriesPageDto</td></tr></tbody></table>
+<h3 id="POST--api-v1-schedule-entries">POST /api/v1/schedule/entries</h3>
+<p>Создать шаблоны пар.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<p>Параметры пути и query отсутствуют.</p>
+<p><strong>Тело:</strong> <code>application/json</code>, схема <code>EntryInputDto</code>.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: EntryDto</td></tr></tbody></table>
+<h3 id="PATCH--api-v1-schedule-entries--id">PATCH /api/v1/schedule/entries/{id}</h3>
+<p>Изменить шаблоны пар.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>id</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p><strong>Тело:</strong> <code>application/json</code>, схема <code>EntryInputDto</code>.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: EntryDto</td></tr></tbody></table>
+<h3 id="DELETE--api-v1-schedule-entries--id">DELETE /api/v1/schedule/entries/{id}</h3>
+<p>Удалить шаблоны пар.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>id</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>204</td><td>Без тела</td></tr></tbody></table>
+<h3 id="GET--api-v1-schedule-occurrences">GET /api/v1/schedule/occurrences</h3>
+<p>Получить конкретные занятия периода.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>from</td><td>query</td><td>Да</td><td>string / date; —</td></tr><tr><td>to</td><td>query</td><td>Да</td><td>string / date; —</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: OccurrencesDto</td></tr></tbody></table>
+<h3 id="PUT--api-v1-schedule-entries--id--exceptions--date">PUT /api/v1/schedule/entries/{id}/exceptions/{date}</h3>
+<p>Сохранить отмену или перенос.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>id</td><td>path</td><td>Да</td><td>string; —</td></tr><tr><td>date</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p><strong>Тело:</strong> <code>application/json</code>, схема <code>ExceptionInputDto</code>.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>204</td><td>Без тела</td></tr></tbody></table>
+<h3 id="DELETE--api-v1-schedule-entries--id--exceptions--date">DELETE /api/v1/schedule/entries/{id}/exceptions/{date}</h3>
+<p>Восстановить исходное занятие.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>id</td><td>path</td><td>Да</td><td>string; —</td></tr><tr><td>date</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>204</td><td>Без тела</td></tr></tbody></table>
+<h3 id="GET--api-v1-semesters">GET /api/v1/semesters</h3>
+<p>Получить семестры.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>page</td><td>query</td><td>Нет</td><td>number; minimum=1; default=1</td></tr><tr><td>limit</td><td>query</td><td>Нет</td><td>number; minimum=1; maximum=100; default=100</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: SemestersPageDto</td></tr></tbody></table>
+<h3 id="POST--api-v1-semesters">POST /api/v1/semesters</h3>
+<p>Создать семестры.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<p>Параметры пути и query отсутствуют.</p>
+<p><strong>Тело:</strong> <code>application/json</code>, схема <code>SemesterInputDto</code>.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: SemesterDto</td></tr></tbody></table>
+<h3 id="PATCH--api-v1-semesters--id">PATCH /api/v1/semesters/{id}</h3>
+<p>Изменить семестры.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>id</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p><strong>Тело:</strong> <code>application/json</code>, схема <code>SemesterInputDto</code>.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: SemesterDto</td></tr></tbody></table>
+<h3 id="DELETE--api-v1-semesters--id">DELETE /api/v1/semesters/{id}</h3>
+<p>Удалить семестры.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>id</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>204</td><td>Без тела</td></tr></tbody></table>
+<h3 id="GET--api-v1-tasks">GET /api/v1/tasks</h3>
+<p>Получить задания.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>page</td><td>query</td><td>Нет</td><td>number; minimum=1; default=1</td></tr><tr><td>limit</td><td>query</td><td>Нет</td><td>number; minimum=1; maximum=100; default=100</td></tr><tr><td>status</td><td>query</td><td>Нет</td><td>string; default=&quot;OPEN&quot;; enum=[&quot;ALL&quot;, &quot;OPEN&quot;, &quot;COMPLETED&quot;, &quot;OVERDUE&quot;]</td></tr><tr><td>subjectId</td><td>query</td><td>Нет</td><td>string / uuid; —</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: TasksPageDto</td></tr></tbody></table>
+<h3 id="POST--api-v1-tasks">POST /api/v1/tasks</h3>
+<p>Создать задания.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<p>Параметры пути и query отсутствуют.</p>
+<p><strong>Тело:</strong> <code>application/json</code>, схема <code>TaskInputDto</code>.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: TaskDto</td></tr></tbody></table>
+<h3 id="GET--api-v1-tasks--id">GET /api/v1/tasks/{id}</h3>
+<p>Получить задания.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>id</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: TaskDto</td></tr></tbody></table>
+<h3 id="PATCH--api-v1-tasks--id">PATCH /api/v1/tasks/{id}</h3>
+<p>Изменить задания.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>id</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p><strong>Тело:</strong> <code>application/json</code>, схема <code>TaskInputDto</code>.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: TaskDto</td></tr></tbody></table>
+<h3 id="DELETE--api-v1-tasks--id">DELETE /api/v1/tasks/{id}</h3>
+<p>Удалить задания.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>id</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>204</td><td>Без тела</td></tr></tbody></table>
+<h3 id="POST--api-v1-tasks--id--complete">POST /api/v1/tasks/{id}/complete</h3>
+<p>Отметить выполнение задания.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>id</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: TaskDto</td></tr></tbody></table>
+<h3 id="POST--api-v1-tasks--id--reopen">POST /api/v1/tasks/{id}/reopen</h3>
+<p>Вернуть задание в работу.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>id</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: TaskDto</td></tr></tbody></table>
+<h3 id="GET--api-v1-tasks--id--history">GET /api/v1/tasks/{id}/history</h3>
+<p>Получить историю выполнения.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>id</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: TaskHistoryDto</td></tr></tbody></table>
+<h3 id="GET--api-v1-statistics-me">GET /api/v1/statistics/me</h3>
+<p>Получить личный прогресс.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<p>Параметры пути и query отсутствуют.</p>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: StatisticsDto</td></tr></tbody></table>
+<h3 id="GET--api-v1-groups-tasks">GET /api/v1/groups/tasks</h3>
+<p>Задания всех действующих групп.</p>
+<p><strong>Доступ:</strong> Активная сессия; список ограничен действующими членствами.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>page</td><td>query</td><td>Нет</td><td>number; minimum=1; default=1</td></tr><tr><td>limit</td><td>query</td><td>Нет</td><td>number; minimum=1; maximum=100; default=100</td></tr><tr><td>status</td><td>query</td><td>Нет</td><td>string; default=&quot;OPEN&quot;; enum=[&quot;ALL&quot;, &quot;OPEN&quot;, &quot;COMPLETED&quot;, &quot;OVERDUE&quot;]</td></tr><tr><td>mode</td><td>query</td><td>Нет</td><td>string; enum=[&quot;INDIVIDUAL&quot;, &quot;SHARED&quot;]</td></tr><tr><td>groupId</td><td>query</td><td>Нет</td><td>string / uuid; —</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: GroupTasksPageDto</td></tr></tbody></table>
+<h3 id="GET--api-v1-groups">GET /api/v1/groups</h3>
+<p>Получить группы.</p>
+<p><strong>Доступ:</strong> Активная сессия; список ограничен действующими членствами.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>page</td><td>query</td><td>Нет</td><td>number; minimum=1; default=1</td></tr><tr><td>limit</td><td>query</td><td>Нет</td><td>number; minimum=1; maximum=100; default=100</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: GroupsPageDto</td></tr></tbody></table>
+<h3 id="POST--api-v1-groups">POST /api/v1/groups</h3>
+<p>Создать группы.</p>
+<p><strong>Доступ:</strong> Активная сессия; список ограничен действующими членствами.</p>
+<p>Параметры пути и query отсутствуют.</p>
+<p><strong>Тело:</strong> <code>application/json</code>, схема <code>GroupInputDto</code>.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>201</td><td>application/json: GroupDto</td></tr></tbody></table>
+<h3 id="POST--api-v1-groups-join">POST /api/v1/groups/join</h3>
+<p>Принять приглашение.</p>
+<p><strong>Доступ:</strong> Активная сессия; список ограничен действующими членствами.</p>
+<p>Параметры пути и query отсутствуют.</p>
+<p><strong>Тело:</strong> <code>application/json</code>, схема <code>GroupJoinInputDto</code>.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: GroupDto</td></tr></tbody></table>
+<h3 id="GET--api-v1-groups--groupId">GET /api/v1/groups/{groupId}</h3>
+<p>Получить группы.</p>
+<p><strong>Доступ:</strong> Действующий участник неархивированной группы.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>groupId</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: GroupDto</td></tr></tbody></table>
+<h3 id="PATCH--api-v1-groups--groupId">PATCH /api/v1/groups/{groupId}</h3>
+<p>Изменить группы.</p>
+<p><strong>Доступ:</strong> Действующий владелец.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>groupId</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p><strong>Тело:</strong> <code>application/json</code>, схема <code>GroupInputDto</code>.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: GroupDto</td></tr></tbody></table>
+<h3 id="DELETE--api-v1-groups--groupId">DELETE /api/v1/groups/{groupId}</h3>
+<p>Архивировать группу.</p>
+<p><strong>Доступ:</strong> Действующий владелец.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>groupId</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>204</td><td>Без тела</td></tr></tbody></table>
+<h3 id="PUT--api-v1-groups--groupId--subject">PUT /api/v1/groups/{groupId}/subject</h3>
+<p>Связать группу с личным предметом.</p>
+<p><strong>Доступ:</strong> Действующий участник неархивированной группы.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>groupId</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p><strong>Тело:</strong> <code>application/json</code>, схема <code>GroupSubjectInputDto</code>.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: GroupDto</td></tr></tbody></table>
+<h3 id="GET--api-v1-groups--groupId--members">GET /api/v1/groups/{groupId}/members</h3>
+<p>Получить участники группы.</p>
+<p><strong>Доступ:</strong> Действующий участник; список заблокированных — только владелец.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>groupId</td><td>path</td><td>Да</td><td>string; —</td></tr><tr><td>page</td><td>query</td><td>Нет</td><td>number; minimum=1; default=1</td></tr><tr><td>limit</td><td>query</td><td>Нет</td><td>number; minimum=1; maximum=100; default=100</td></tr><tr><td>status</td><td>query</td><td>Нет</td><td>string; default=&quot;ACTIVE&quot;; enum=[&quot;ACTIVE&quot;, &quot;BLOCKED&quot;]</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: GroupMembersPageDto</td></tr></tbody></table>
+<h3 id="PATCH--api-v1-groups--groupId--members--userId">PATCH /api/v1/groups/{groupId}/members/{userId}</h3>
+<p>Назначить или снять роль модератора.</p>
+<p><strong>Доступ:</strong> Действующий владелец.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>groupId</td><td>path</td><td>Да</td><td>string; —</td></tr><tr><td>userId</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p><strong>Тело:</strong> <code>application/json</code>, схема <code>GroupRoleInputDto</code>.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>204</td><td>Без тела</td></tr></tbody></table>
+<h3 id="DELETE--api-v1-groups--groupId--members--userId">DELETE /api/v1/groups/{groupId}/members/{userId}</h3>
+<p>Исключить и заблокировать участника.</p>
+<p><strong>Доступ:</strong> Модератор — обычного участника; владелец — участника или модератора.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>groupId</td><td>path</td><td>Да</td><td>string; —</td></tr><tr><td>userId</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>204</td><td>Без тела</td></tr></tbody></table>
+<h3 id="POST--api-v1-groups--groupId--members--userId--unblock">POST /api/v1/groups/{groupId}/members/{userId}/unblock</h3>
+<p>Снять блокировку вступления.</p>
+<p><strong>Доступ:</strong> Действующий владелец.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>groupId</td><td>path</td><td>Да</td><td>string; —</td></tr><tr><td>userId</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>204</td><td>Без тела</td></tr></tbody></table>
+<h3 id="POST--api-v1-groups--groupId--leave">POST /api/v1/groups/{groupId}/leave</h3>
+<p>Выйти из группы.</p>
+<p><strong>Доступ:</strong> Действующий участник или модератор; владелец сначала передаёт владение.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>groupId</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>204</td><td>Без тела</td></tr></tbody></table>
+<h3 id="POST--api-v1-groups--groupId--transfer-ownership">POST /api/v1/groups/{groupId}/transfer-ownership</h3>
+<p>Передать владение группой.</p>
+<p><strong>Доступ:</strong> Действующий владелец.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>groupId</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p><strong>Тело:</strong> <code>application/json</code>, схема <code>TransferGroupInputDto</code>.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: GroupDto</td></tr></tbody></table>
+<h3 id="GET--api-v1-groups--groupId--invitations">GET /api/v1/groups/{groupId}/invitations</h3>
+<p>Получить приглашения.</p>
+<p><strong>Доступ:</strong> Модератор/владелец; отзыв модератором только своего приглашения.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>groupId</td><td>path</td><td>Да</td><td>string; —</td></tr><tr><td>page</td><td>query</td><td>Нет</td><td>number; minimum=1; default=1</td></tr><tr><td>limit</td><td>query</td><td>Нет</td><td>number; minimum=1; maximum=100; default=100</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: GroupInvitationsPageDto</td></tr></tbody></table>
+<h3 id="POST--api-v1-groups--groupId--invitations">POST /api/v1/groups/{groupId}/invitations</h3>
+<p>Создать приглашения.</p>
+<p><strong>Доступ:</strong> Модератор/владелец; отзыв модератором только своего приглашения.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>groupId</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p><strong>Тело:</strong> <code>application/json</code>, схема <code>GroupInvitationInputDto</code>.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>201</td><td>application/json: NewGroupInvitationDto</td></tr></tbody></table>
+<h3 id="DELETE--api-v1-groups--groupId--invitations--id">DELETE /api/v1/groups/{groupId}/invitations/{id}</h3>
+<p>Отозвать приглашение.</p>
+<p><strong>Доступ:</strong> Модератор/владелец; отзыв модератором только своего приглашения.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>groupId</td><td>path</td><td>Да</td><td>string; —</td></tr><tr><td>id</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>204</td><td>Без тела</td></tr></tbody></table>
+<h3 id="GET--api-v1-groups--groupId--tasks">GET /api/v1/groups/{groupId}/tasks</h3>
+<p>Получить задания.</p>
+<p><strong>Доступ:</strong> Действующий участник неархивированной группы.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>groupId</td><td>path</td><td>Да</td><td>string; —</td></tr><tr><td>page</td><td>query</td><td>Нет</td><td>number; minimum=1; default=1</td></tr><tr><td>limit</td><td>query</td><td>Нет</td><td>number; minimum=1; maximum=100; default=100</td></tr><tr><td>status</td><td>query</td><td>Нет</td><td>string; default=&quot;OPEN&quot;; enum=[&quot;ALL&quot;, &quot;OPEN&quot;, &quot;COMPLETED&quot;, &quot;OVERDUE&quot;]</td></tr><tr><td>mode</td><td>query</td><td>Нет</td><td>string; enum=[&quot;INDIVIDUAL&quot;, &quot;SHARED&quot;]</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: GroupTasksPageDto</td></tr></tbody></table>
+<h3 id="POST--api-v1-groups--groupId--tasks">POST /api/v1/groups/{groupId}/tasks</h3>
+<p>Создать задания.</p>
+<p><strong>Доступ:</strong> Действующий участник неархивированной группы.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>groupId</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p><strong>Тело:</strong> <code>application/json</code>, схема <code>NewGroupTaskInputDto</code>.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>201</td><td>application/json: GroupTaskDto</td></tr></tbody></table>
+<h3 id="GET--api-v1-groups--groupId--tasks--id">GET /api/v1/groups/{groupId}/tasks/{id}</h3>
+<p>Получить задания.</p>
+<p><strong>Доступ:</strong> Действующий участник неархивированной группы.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>groupId</td><td>path</td><td>Да</td><td>string; —</td></tr><tr><td>id</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: GroupTaskDto</td></tr></tbody></table>
+<h3 id="PATCH--api-v1-groups--groupId--tasks--id">PATCH /api/v1/groups/{groupId}/tasks/{id}</h3>
+<p>Изменить задания.</p>
+<p><strong>Доступ:</strong> Действующий участник и автор публикации.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>groupId</td><td>path</td><td>Да</td><td>string; —</td></tr><tr><td>id</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p><strong>Тело:</strong> <code>application/json</code>, схема <code>GroupTaskInputDto</code>.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: GroupTaskDto</td></tr></tbody></table>
+<h3 id="DELETE--api-v1-groups--groupId--tasks--id">DELETE /api/v1/groups/{groupId}/tasks/{id}</h3>
+<p>Удалить задания.</p>
+<p><strong>Доступ:</strong> Действующий автор, модератор или владелец.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>groupId</td><td>path</td><td>Да</td><td>string; —</td></tr><tr><td>id</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>204</td><td>Без тела</td></tr></tbody></table>
+<h3 id="POST--api-v1-groups--groupId--tasks--id--complete">POST /api/v1/groups/{groupId}/tasks/{id}/complete</h3>
+<p>Отметить выполнение задания.</p>
+<p><strong>Доступ:</strong> INDIVIDUAL — собственная отметка; SHARED — действующий автор/модератор/владелец.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>groupId</td><td>path</td><td>Да</td><td>string; —</td></tr><tr><td>id</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: GroupTaskDto</td></tr></tbody></table>
+<h3 id="POST--api-v1-groups--groupId--tasks--id--reopen">POST /api/v1/groups/{groupId}/tasks/{id}/reopen</h3>
+<p>Вернуть задание в работу.</p>
+<p><strong>Доступ:</strong> INDIVIDUAL — собственная отметка; SHARED — действующий автор/модератор/владелец.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>groupId</td><td>path</td><td>Да</td><td>string; —</td></tr><tr><td>id</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: GroupTaskDto</td></tr></tbody></table>
+<h3 id="GET--api-v1-groups--groupId--tasks--id--history">GET /api/v1/groups/{groupId}/tasks/{id}/history</h3>
+<p>Получить историю выполнения.</p>
+<p><strong>Доступ:</strong> Действующий участник; INDIVIDUAL — только собственная история.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>groupId</td><td>path</td><td>Да</td><td>string; —</td></tr><tr><td>id</td><td>path</td><td>Да</td><td>string; —</td></tr><tr><td>page</td><td>query</td><td>Нет</td><td>number; minimum=1; default=1</td></tr><tr><td>limit</td><td>query</td><td>Нет</td><td>number; minimum=1; maximum=100; default=100</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: GroupTaskHistoryDto</td></tr></tbody></table>
+<h3 id="GET--api-v1-groups--groupId--statistics">GET /api/v1/groups/{groupId}/statistics</h3>
+<p>Получить прогресс общих заданий группы.</p>
+<p><strong>Доступ:</strong> Действующий участник неархивированной группы.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>groupId</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: StatisticsDto</td></tr></tbody></table>
+<h3 id="GET--api-v1-files-targets--kind---parentId">GET /api/v1/files/targets/{kind}/{parentId}</h3>
+<p>Получить список готовых вложений.</p>
+<p><strong>Доступ:</strong> Сессия и доступ к родителю; добавление/удаление — владелец личного задания или автор групповой публикации.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>kind</td><td>path</td><td>Да</td><td>string; enum=[&quot;task&quot;, &quot;group-task&quot;, &quot;material&quot;]</td></tr><tr><td>parentId</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: AttachmentsDto</td></tr></tbody></table>
+<h3 id="POST--api-v1-files-targets--kind---parentId">POST /api/v1/files/targets/{kind}/{parentId}</h3>
+<p>Загрузить файл в публикацию.</p>
+<p><strong>Доступ:</strong> Сессия и доступ к родителю; добавление/удаление — владелец личного задания или автор групповой публикации.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>kind</td><td>path</td><td>Да</td><td>string; enum=[&quot;task&quot;, &quot;group-task&quot;, &quot;material&quot;]</td></tr><tr><td>parentId</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p><strong>Тело:</strong> <code>multipart/form-data</code>, схема <code>object</code>. Обязательное поле <code>file</code> — binary; необязательное <code>name</code> — строка до 240 символов.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>201</td><td>application/json: AttachmentDto</td></tr></tbody></table>
+<h3 id="GET--api-v1-files--id--content">GET /api/v1/files/{id}/content</h3>
+<p>Скачать байты вложения.</p>
+<p><strong>Доступ:</strong> Сессия и доступ к родителю; добавление/удаление — владелец личного задания или автор групповой публикации.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>id</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/octet-stream: string / binary</td></tr></tbody></table>
+<h3 id="DELETE--api-v1-files--id">DELETE /api/v1/files/{id}</h3>
+<p>Удалить вложения.</p>
+<p><strong>Доступ:</strong> Сессия и доступ к родителю; добавление/удаление — владелец личного задания или автор групповой публикации.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>id</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>204</td><td>Без тела</td></tr></tbody></table>
+<h3 id="GET--api-v1-groups--groupId--materials">GET /api/v1/groups/{groupId}/materials</h3>
+<p>Получить материалы группы.</p>
+<p><strong>Доступ:</strong> Действующий участник неархивированной группы.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>groupId</td><td>path</td><td>Да</td><td>string; —</td></tr><tr><td>page</td><td>query</td><td>Нет</td><td>number; minimum=1; default=1</td></tr><tr><td>limit</td><td>query</td><td>Нет</td><td>number; minimum=1; maximum=100; default=100</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: GroupMaterialsPageDto</td></tr></tbody></table>
+<h3 id="POST--api-v1-groups--groupId--materials">POST /api/v1/groups/{groupId}/materials</h3>
+<p>Создать материалы группы.</p>
+<p><strong>Доступ:</strong> Действующий участник неархивированной группы.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>groupId</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p><strong>Тело:</strong> <code>application/json</code>, схема <code>GroupMaterialInputDto</code>.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>201</td><td>application/json: GroupMaterialDto</td></tr></tbody></table>
+<h3 id="PATCH--api-v1-groups--groupId--materials--id">PATCH /api/v1/groups/{groupId}/materials/{id}</h3>
+<p>Изменить материалы группы.</p>
+<p><strong>Доступ:</strong> Действующий участник и автор публикации.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>groupId</td><td>path</td><td>Да</td><td>string; —</td></tr><tr><td>id</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p><strong>Тело:</strong> <code>application/json</code>, схема <code>GroupMaterialInputDto</code>.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: GroupMaterialDto</td></tr></tbody></table>
+<h3 id="DELETE--api-v1-groups--groupId--materials--id">DELETE /api/v1/groups/{groupId}/materials/{id}</h3>
+<p>Удалить материалы группы.</p>
+<p><strong>Доступ:</strong> Действующий автор, модератор или владелец.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>groupId</td><td>path</td><td>Да</td><td>string; —</td></tr><tr><td>id</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>204</td><td>Без тела</td></tr></tbody></table>
+<h3 id="GET--api-v1-notifications-settings">GET /api/v1/notifications/settings</h3>
+<p>Получить настройки и доступность каналов.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<p>Параметры пути и query отсутствуют.</p>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: ReminderSettingsDto</td></tr></tbody></table>
+<h3 id="PATCH--api-v1-notifications-settings">PATCH /api/v1/notifications/settings</h3>
+<p>Сохранить настройки напоминаний.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<p>Параметры пути и query отсутствуют.</p>
+<p><strong>Тело:</strong> <code>application/json</code>, схема <code>ReminderSettingsInputDto</code>.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: ReminderSettingsDto</td></tr></tbody></table>
+<h3 id="POST--api-v1-notifications-subscriptions">POST /api/v1/notifications/subscriptions</h3>
+<p>Зарегистрировать подписку текущей сессии.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<p>Параметры пути и query отсутствуют.</p>
+<p><strong>Тело:</strong> <code>application/json</code>, схема <code>RegisterPushDto</code>.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>204</td><td>Без тела</td></tr></tbody></table>
+<h3 id="DELETE--api-v1-notifications-subscriptions--transport">DELETE /api/v1/notifications/subscriptions/{transport}</h3>
+<p>Отключить подписки текущей сессии и платформы.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>transport</td><td>path</td><td>Да</td><td>string; enum=[&quot;WEB&quot;, &quot;ANDROID&quot;]</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>204</td><td>Без тела</td></tr></tbody></table>
+<h3 id="GET--api-v1-notifications-inbox">GET /api/v1/notifications/inbox</h3>
+<p>Получить последние 30 входящих напоминаний.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<p>Параметры пути и query отсутствуют.</p>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>200</td><td>application/json: NotificationInboxDto</td></tr></tbody></table>
+<h3 id="POST--api-v1-notifications-inbox--id--read">POST /api/v1/notifications/inbox/{id}/read</h3>
+<p>Пометить напоминание прочитанным.</p>
+<p><strong>Доступ:</strong> Активная сессия; данные текущего пользователя.</p>
+<table><thead><tr><th>Параметр</th><th>Где</th><th>Обязателен</th><th>Тип и ограничения</th></tr></thead><tbody><tr><td>id</td><td>path</td><td>Да</td><td>string; —</td></tr></tbody></table>
+<p>Тело запроса не предусмотрено.</p>
+<table><thead><tr><th>Объявленный HTTP-код</th><th>Тело ответа</th></tr></thead><tbody><tr><td>204</td><td>Без тела</td></tr></tbody></table>
+<h2 id="Полный-словарь-схем">Полный словарь схем</h2>
+<p>Знак вопроса не используется для nullable: обязательность поля и допустимость null указаны отдельно.</p>
+<h3 id="HealthDto">HealthDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>status</td><td>string</td><td>Да</td><td>enum=[&quot;ok&quot;]</td></tr><tr><td>service</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>version</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>timestamp</td><td>string / date-time</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="ErrorDetailDto">ErrorDetailDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>code</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>message</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>requestId</td><td>string</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="ApiErrorDto">ApiErrorDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>error</td><td>ErrorDetailDto</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="RegisterDto">RegisterDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>email</td><td>string</td><td>Да</td><td>example=&quot;student@example.com&quot;</td></tr><tr><td>password</td><td>string</td><td>Да</td><td>minLength=12; maxLength=128</td></tr><tr><td>displayName</td><td>string</td><td>Да</td><td>minLength=2; maxLength=80</td></tr><tr><td>timeZone</td><td>string</td><td>Да</td><td>example=&quot;Asia/Novosibirsk&quot;</td></tr></tbody></table>
+<h3 id="MessageDto">MessageDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>message</td><td>string</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="LoginDto">LoginDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>email</td><td>string</td><td>Да</td><td>example=&quot;student@example.com&quot;</td></tr><tr><td>password</td><td>string</td><td>Да</td><td>minLength=1; maxLength=128</td></tr></tbody></table>
+<h3 id="UserDto">UserDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>id</td><td>string / uuid</td><td>Да</td><td>—</td></tr><tr><td>email</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>displayName</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>timeZone</td><td>string</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="SessionDto">SessionDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>user</td><td>UserDto</td><td>Да</td><td>—</td></tr><tr><td>csrfToken</td><td>string</td><td>Нет</td><td>In-memory CSRF token for cookie sessions</td></tr><tr><td>token</td><td>string</td><td>Нет</td><td>Only returned at native login; store in SecureStore</td></tr></tbody></table>
+<h3 id="EmailDto">EmailDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>email</td><td>string</td><td>Да</td><td>example=&quot;student@example.com&quot;</td></tr></tbody></table>
+<h3 id="ResetPasswordDto">ResetPasswordDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>token</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>password</td><td>string</td><td>Да</td><td>minLength=12; maxLength=128</td></tr></tbody></table>
+<h3 id="ProfileDto">ProfileDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>displayName</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>timeZone</td><td>string</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="SubjectDto">SubjectDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>name</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>color</td><td>string</td><td>Да</td><td>example=&quot;#6554D9&quot;</td></tr><tr><td>id</td><td>string / uuid</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="SubjectsPageDto">SubjectsPageDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>items</td><td>array&lt;SubjectDto&gt;</td><td>Да</td><td>—</td></tr><tr><td>total</td><td>number</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="SubjectInputDto">SubjectInputDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>name</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>color</td><td>string</td><td>Да</td><td>example=&quot;#6554D9&quot;</td></tr></tbody></table>
+<h3 id="TeacherDto">TeacherDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>name</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>email</td><td>string</td><td>Нет</td><td>nullable=true</td></tr><tr><td>phone</td><td>string</td><td>Нет</td><td>nullable=true</td></tr><tr><td>notes</td><td>string</td><td>Нет</td><td>nullable=true</td></tr><tr><td>id</td><td>string / uuid</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="TeachersPageDto">TeachersPageDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>items</td><td>array&lt;TeacherDto&gt;</td><td>Да</td><td>—</td></tr><tr><td>total</td><td>number</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="TeacherInputDto">TeacherInputDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>name</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>email</td><td>string</td><td>Нет</td><td>nullable=true</td></tr><tr><td>phone</td><td>string</td><td>Нет</td><td>nullable=true</td></tr><tr><td>notes</td><td>string</td><td>Нет</td><td>nullable=true</td></tr></tbody></table>
+<h3 id="EntryDto">EntryDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>semesterId</td><td>string / uuid</td><td>Да</td><td>—</td></tr><tr><td>subjectId</td><td>string / uuid</td><td>Да</td><td>—</td></tr><tr><td>teacherId</td><td>string</td><td>Нет</td><td>nullable=true</td></tr><tr><td>dayOfWeek</td><td>number</td><td>Да</td><td>minimum=1; maximum=7</td></tr><tr><td>startTime</td><td>string</td><td>Да</td><td>example=&quot;09:00&quot;</td></tr><tr><td>endTime</td><td>string</td><td>Да</td><td>example=&quot;10:30&quot;</td></tr><tr><td>parity</td><td>string</td><td>Да</td><td>enum=[&quot;ALL&quot;, &quot;EVEN&quot;, &quot;ODD&quot;]</td></tr><tr><td>room</td><td>string</td><td>Нет</td><td>nullable=true</td></tr><tr><td>id</td><td>string / uuid</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="EntriesPageDto">EntriesPageDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>items</td><td>array&lt;EntryDto&gt;</td><td>Да</td><td>—</td></tr><tr><td>total</td><td>number</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="EntryInputDto">EntryInputDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>semesterId</td><td>string / uuid</td><td>Да</td><td>—</td></tr><tr><td>subjectId</td><td>string / uuid</td><td>Да</td><td>—</td></tr><tr><td>teacherId</td><td>string</td><td>Нет</td><td>nullable=true</td></tr><tr><td>dayOfWeek</td><td>number</td><td>Да</td><td>minimum=1; maximum=7</td></tr><tr><td>startTime</td><td>string</td><td>Да</td><td>example=&quot;09:00&quot;</td></tr><tr><td>endTime</td><td>string</td><td>Да</td><td>example=&quot;10:30&quot;</td></tr><tr><td>parity</td><td>string</td><td>Да</td><td>enum=[&quot;ALL&quot;, &quot;EVEN&quot;, &quot;ODD&quot;]</td></tr><tr><td>room</td><td>string</td><td>Нет</td><td>nullable=true</td></tr></tbody></table>
+<h3 id="OccurrenceDto">OccurrenceDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>id</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>entryId</td><td>string / uuid</td><td>Да</td><td>—</td></tr><tr><td>semesterId</td><td>string / uuid</td><td>Да</td><td>—</td></tr><tr><td>subjectName</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>color</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>teacherName</td><td>string</td><td>Да</td><td>nullable=true</td></tr><tr><td>room</td><td>string</td><td>Да</td><td>nullable=true</td></tr><tr><td>originalDate</td><td>string / date</td><td>Да</td><td>—</td></tr><tr><td>date</td><td>string / date</td><td>Да</td><td>—</td></tr><tr><td>startsAt</td><td>string / date-time</td><td>Да</td><td>—</td></tr><tr><td>endsAt</td><td>string / date-time</td><td>Да</td><td>—</td></tr><tr><td>cancelled</td><td>boolean</td><td>Да</td><td>—</td></tr><tr><td>moved</td><td>boolean</td><td>Да</td><td>—</td></tr><tr><td>weekNumber</td><td>number</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="OccurrencesDto">OccurrencesDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>items</td><td>array&lt;OccurrenceDto&gt;</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="ExceptionInputDto">ExceptionInputDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>cancelled</td><td>boolean</td><td>Да</td><td>—</td></tr><tr><td>replacementDate</td><td>string / date</td><td>Нет</td><td>—</td></tr><tr><td>startTime</td><td>string</td><td>Нет</td><td>—</td></tr><tr><td>endTime</td><td>string</td><td>Нет</td><td>—</td></tr></tbody></table>
+<h3 id="SemesterDto">SemesterDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>name</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>startDate</td><td>string / date</td><td>Да</td><td>—</td></tr><tr><td>endDate</td><td>string / date</td><td>Да</td><td>—</td></tr><tr><td>weekStartDate</td><td>string / date</td><td>Да</td><td>—</td></tr><tr><td>timeZone</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>id</td><td>string / uuid</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="SemestersPageDto">SemestersPageDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>items</td><td>array&lt;SemesterDto&gt;</td><td>Да</td><td>—</td></tr><tr><td>total</td><td>number</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="SemesterInputDto">SemesterInputDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>name</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>startDate</td><td>string / date</td><td>Да</td><td>—</td></tr><tr><td>endDate</td><td>string / date</td><td>Да</td><td>—</td></tr><tr><td>weekStartDate</td><td>string / date</td><td>Да</td><td>—</td></tr><tr><td>timeZone</td><td>string</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="TaskDto">TaskDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>id</td><td>string / uuid</td><td>Да</td><td>—</td></tr><tr><td>title</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>description</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>dueAt</td><td>string / date-time</td><td>Да</td><td>—</td></tr><tr><td>deadlineRevision</td><td>number</td><td>Да</td><td>—</td></tr><tr><td>subjectId</td><td>string / uuid</td><td>Да</td><td>nullable=true</td></tr><tr><td>subjectName</td><td>string</td><td>Да</td><td>nullable=true</td></tr><tr><td>subjectColor</td><td>string</td><td>Да</td><td>nullable=true</td></tr><tr><td>completedAt</td><td>string / date-time</td><td>Да</td><td>nullable=true</td></tr><tr><td>deadlineAtCompletion</td><td>string / date-time</td><td>Да</td><td>nullable=true</td></tr><tr><td>status</td><td>string</td><td>Да</td><td>enum=[&quot;OPEN&quot;, &quot;OVERDUE&quot;, &quot;COMPLETED_ON_TIME&quot;, &quot;COMPLETED_LATE&quot;]</td></tr></tbody></table>
+<h3 id="TasksPageDto">TasksPageDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>items</td><td>array&lt;TaskDto&gt;</td><td>Да</td><td>—</td></tr><tr><td>total</td><td>number</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="TaskInputDto">TaskInputDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>title</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>description</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>dueAt</td><td>string / date-time</td><td>Да</td><td>—</td></tr><tr><td>subjectId</td><td>string / uuid</td><td>Нет</td><td>nullable=true</td></tr></tbody></table>
+<h3 id="TaskEventDto">TaskEventDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>id</td><td>string / uuid</td><td>Да</td><td>—</td></tr><tr><td>kind</td><td>string</td><td>Да</td><td>enum=[&quot;COMPLETED&quot;, &quot;REOPENED&quot;]</td></tr><tr><td>createdAt</td><td>string / date-time</td><td>Да</td><td>—</td></tr><tr><td>deadlineSnapshot</td><td>string / date-time</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="TaskHistoryDto">TaskHistoryDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>items</td><td>array&lt;TaskEventDto&gt;</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="StatisticsDto">StatisticsDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>total</td><td>number</td><td>Да</td><td>—</td></tr><tr><td>open</td><td>number</td><td>Да</td><td>—</td></tr><tr><td>completedOnTime</td><td>number</td><td>Да</td><td>—</td></tr><tr><td>completedLate</td><td>number</td><td>Да</td><td>—</td></tr><tr><td>overdue</td><td>number</td><td>Да</td><td>—</td></tr><tr><td>completionRate</td><td>number</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="GroupTaskDto">GroupTaskDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>id</td><td>string / uuid</td><td>Да</td><td>—</td></tr><tr><td>title</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>description</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>dueAt</td><td>string / date-time</td><td>Да</td><td>—</td></tr><tr><td>deadlineRevision</td><td>number</td><td>Да</td><td>—</td></tr><tr><td>completedAt</td><td>string / date-time</td><td>Да</td><td>nullable=true</td></tr><tr><td>deadlineAtCompletion</td><td>string / date-time</td><td>Да</td><td>nullable=true</td></tr><tr><td>status</td><td>string</td><td>Да</td><td>enum=[&quot;OPEN&quot;, &quot;OVERDUE&quot;, &quot;COMPLETED_ON_TIME&quot;, &quot;COMPLETED_LATE&quot;]</td></tr><tr><td>groupId</td><td>string / uuid</td><td>Да</td><td>—</td></tr><tr><td>groupName</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>authorId</td><td>string / uuid</td><td>Да</td><td>nullable=true</td></tr><tr><td>authorName</td><td>string</td><td>Да</td><td>nullable=true</td></tr><tr><td>mode</td><td>string</td><td>Да</td><td>enum=[&quot;INDIVIDUAL&quot;, &quot;SHARED&quot;]</td></tr><tr><td>canComplete</td><td>boolean</td><td>Да</td><td>—</td></tr><tr><td>canEdit</td><td>boolean</td><td>Да</td><td>—</td></tr><tr><td>canDelete</td><td>boolean</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="GroupTasksPageDto">GroupTasksPageDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>items</td><td>array&lt;GroupTaskDto&gt;</td><td>Да</td><td>—</td></tr><tr><td>total</td><td>number</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="GroupDto">GroupDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>id</td><td>string / uuid</td><td>Да</td><td>—</td></tr><tr><td>ownerId</td><td>string / uuid</td><td>Да</td><td>—</td></tr><tr><td>name</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>subjectName</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>description</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>role</td><td>string</td><td>Да</td><td>enum=[&quot;OWNER&quot;, &quot;MODERATOR&quot;, &quot;MEMBER&quot;]</td></tr><tr><td>linkedSubjectId</td><td>string / uuid</td><td>Да</td><td>nullable=true</td></tr><tr><td>createdAt</td><td>string / date-time</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="GroupsPageDto">GroupsPageDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>items</td><td>array&lt;GroupDto&gt;</td><td>Да</td><td>—</td></tr><tr><td>total</td><td>number</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="GroupInputDto">GroupInputDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>name</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>subjectName</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>description</td><td>string</td><td>Нет</td><td>—</td></tr></tbody></table>
+<h3 id="GroupJoinInputDto">GroupJoinInputDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>code</td><td>string</td><td>Да</td><td>minLength=20; maxLength=20</td></tr></tbody></table>
+<h3 id="GroupSubjectInputDto">GroupSubjectInputDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>subjectId</td><td>string / uuid</td><td>Да</td><td>nullable=true</td></tr></tbody></table>
+<h3 id="GroupMemberDto">GroupMemberDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>userId</td><td>string / uuid</td><td>Да</td><td>—</td></tr><tr><td>displayName</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>role</td><td>string</td><td>Да</td><td>enum=[&quot;OWNER&quot;, &quot;MODERATOR&quot;, &quot;MEMBER&quot;]</td></tr><tr><td>joinedAt</td><td>string / date-time</td><td>Да</td><td>—</td></tr><tr><td>blocked</td><td>boolean</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="GroupMembersPageDto">GroupMembersPageDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>items</td><td>array&lt;GroupMemberDto&gt;</td><td>Да</td><td>—</td></tr><tr><td>total</td><td>number</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="GroupRoleInputDto">GroupRoleInputDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>role</td><td>string</td><td>Да</td><td>enum=[&quot;MEMBER&quot;, &quot;MODERATOR&quot;]</td></tr></tbody></table>
+<h3 id="TransferGroupInputDto">TransferGroupInputDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>userId</td><td>string / uuid</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="GroupInvitationDto">GroupInvitationDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>id</td><td>string / uuid</td><td>Да</td><td>—</td></tr><tr><td>creatorId</td><td>string / uuid</td><td>Да</td><td>nullable=true</td></tr><tr><td>createdAt</td><td>string / date-time</td><td>Да</td><td>—</td></tr><tr><td>expiresAt</td><td>string / date-time</td><td>Да</td><td>—</td></tr><tr><td>revokedAt</td><td>string / date-time</td><td>Да</td><td>nullable=true</td></tr><tr><td>maxUses</td><td>number</td><td>Да</td><td>—</td></tr><tr><td>uses</td><td>number</td><td>Да</td><td>—</td></tr><tr><td>canRevoke</td><td>boolean</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="GroupInvitationsPageDto">GroupInvitationsPageDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>items</td><td>array&lt;GroupInvitationDto&gt;</td><td>Да</td><td>—</td></tr><tr><td>total</td><td>number</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="GroupInvitationInputDto">GroupInvitationInputDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>expiresInHours</td><td>number</td><td>Нет</td><td>minimum=1; maximum=720; default=168</td></tr><tr><td>maxUses</td><td>number</td><td>Нет</td><td>minimum=1; maximum=250; default=25</td></tr></tbody></table>
+<h3 id="NewGroupInvitationDto">NewGroupInvitationDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>id</td><td>string / uuid</td><td>Да</td><td>—</td></tr><tr><td>creatorId</td><td>string / uuid</td><td>Да</td><td>nullable=true</td></tr><tr><td>createdAt</td><td>string / date-time</td><td>Да</td><td>—</td></tr><tr><td>expiresAt</td><td>string / date-time</td><td>Да</td><td>—</td></tr><tr><td>revokedAt</td><td>string / date-time</td><td>Да</td><td>nullable=true</td></tr><tr><td>maxUses</td><td>number</td><td>Да</td><td>—</td></tr><tr><td>uses</td><td>number</td><td>Да</td><td>—</td></tr><tr><td>canRevoke</td><td>boolean</td><td>Да</td><td>—</td></tr><tr><td>code</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>url</td><td>string</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="NewGroupTaskInputDto">NewGroupTaskInputDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>title</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>description</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>dueAt</td><td>string / date-time</td><td>Да</td><td>—</td></tr><tr><td>mode</td><td>string</td><td>Да</td><td>enum=[&quot;INDIVIDUAL&quot;, &quot;SHARED&quot;]</td></tr></tbody></table>
+<h3 id="GroupTaskInputDto">GroupTaskInputDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>title</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>description</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>dueAt</td><td>string / date-time</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="GroupTaskEventDto">GroupTaskEventDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>id</td><td>string / uuid</td><td>Да</td><td>—</td></tr><tr><td>kind</td><td>string</td><td>Да</td><td>enum=[&quot;COMPLETED&quot;, &quot;REOPENED&quot;]</td></tr><tr><td>createdAt</td><td>string / date-time</td><td>Да</td><td>—</td></tr><tr><td>deadlineSnapshot</td><td>string / date-time</td><td>Да</td><td>—</td></tr><tr><td>actorName</td><td>string</td><td>Да</td><td>nullable=true</td></tr></tbody></table>
+<h3 id="GroupTaskHistoryDto">GroupTaskHistoryDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>items</td><td>array&lt;GroupTaskEventDto&gt;</td><td>Да</td><td>—</td></tr><tr><td>total</td><td>number</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="AttachmentDto">AttachmentDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>id</td><td>string / uuid</td><td>Да</td><td>—</td></tr><tr><td>name</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>mimeType</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>size</td><td>number</td><td>Да</td><td>—</td></tr><tr><td>createdAt</td><td>string / date-time</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="AttachmentsDto">AttachmentsDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>items</td><td>array&lt;AttachmentDto&gt;</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="GroupMaterialDto">GroupMaterialDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>id</td><td>string / uuid</td><td>Да</td><td>—</td></tr><tr><td>groupId</td><td>string / uuid</td><td>Да</td><td>—</td></tr><tr><td>authorId</td><td>string / uuid</td><td>Да</td><td>nullable=true</td></tr><tr><td>authorName</td><td>string</td><td>Да</td><td>nullable=true</td></tr><tr><td>title</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>description</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>createdAt</td><td>string / date-time</td><td>Да</td><td>—</td></tr><tr><td>updatedAt</td><td>string / date-time</td><td>Да</td><td>—</td></tr><tr><td>attachmentCount</td><td>number</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="GroupMaterialsPageDto">GroupMaterialsPageDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>items</td><td>array&lt;GroupMaterialDto&gt;</td><td>Да</td><td>—</td></tr><tr><td>total</td><td>number</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="GroupMaterialInputDto">GroupMaterialInputDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>title</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>description</td><td>string</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="ReminderSettingsDto">ReminderSettingsDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>enabled</td><td>boolean</td><td>Да</td><td>—</td></tr><tr><td>minutesBefore</td><td>number</td><td>Да</td><td>minimum=1; maximum=10080</td></tr><tr><td>androidAvailable</td><td>boolean</td><td>Да</td><td>—</td></tr><tr><td>webAvailable</td><td>boolean</td><td>Да</td><td>—</td></tr><tr><td>webPublicKey</td><td>string</td><td>Да</td><td>nullable=true</td></tr><tr><td>subscribed</td><td>array&lt;string&gt;</td><td>Да</td><td>—</td></tr></tbody></table>
+<h3 id="ReminderSettingsInputDto">ReminderSettingsInputDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>enabled</td><td>boolean</td><td>Да</td><td>—</td></tr><tr><td>minutesBefore</td><td>number</td><td>Да</td><td>minimum=1; maximum=10080</td></tr></tbody></table>
+<h3 id="RegisterPushDto">RegisterPushDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>transport</td><td>string</td><td>Да</td><td>enum=[&quot;WEB&quot;, &quot;ANDROID&quot;]</td></tr><tr><td>address</td><td>string</td><td>Да</td><td>—</td></tr><tr><td>p256dh</td><td>string</td><td>Нет</td><td>—</td></tr><tr><td>auth</td><td>string</td><td>Нет</td><td>—</td></tr><tr><td>refreshOnly</td><td>boolean</td><td>Нет</td><td>Обновляет только активную подписку текущей сессии.</td></tr></tbody></table>
+<h3 id="NotificationNoticeDto">NotificationNoticeDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>id</td><td>string / uuid</td><td>Да</td><td>—</td></tr><tr><td>kind</td><td>string</td><td>Да</td><td>enum=[&quot;PERSONAL&quot;, &quot;GROUP&quot;]</td></tr><tr><td>taskId</td><td>string / uuid</td><td>Да</td><td>—</td></tr><tr><td>groupId</td><td>string / uuid</td><td>Да</td><td>nullable=true</td></tr><tr><td>scheduledAt</td><td>string / date-time</td><td>Да</td><td>—</td></tr><tr><td>createdAt</td><td>string / date-time</td><td>Да</td><td>—</td></tr><tr><td>readAt</td><td>string / date-time</td><td>Да</td><td>nullable=true</td></tr></tbody></table>
+<h3 id="NotificationInboxDto">NotificationInboxDto</h3>
+<table><thead><tr><th>Поле</th><th>Тип</th><th>Обязательно</th><th>Ограничения контракта</th></tr></thead><tbody><tr><td>items</td><td>array&lt;NotificationNoticeDto&gt;</td><td>Да</td><td>—</td></tr><tr><td>unreadCount</td><td>number</td><td>Да</td><td>—</td></tr></tbody></table></html>
