@@ -1,0 +1,79 @@
+{
+  "fileKey": "G5td2BUaPyTcOFqbkGbQQR",
+  "url": "https://www.figma.com/design/G5td2BUaPyTcOFqbkGbQQR",
+  "status": "created_and_visually_reviewed",
+  "pages": {
+    "system": {
+      "id": "0:1",
+      "name": "01 Дизайн-система Android"
+    },
+    "screens": {
+      "id": "2:270",
+      "name": "02 Экраны Android"
+    }
+  },
+  "screens": {
+    "today": {
+      "id": "2:324",
+      "name": "01 Сегодня",
+      "width": 390,
+      "height": 1003,
+      "preview": "design/today.png"
+    },
+    "schedule": {
+      "id": "2:403",
+      "name": "02 Расписание",
+      "width": 390,
+      "height": 1139,
+      "preview": "design/schedule.png"
+    },
+    "tasks": {
+      "id": "2:490",
+      "name": "03 Личные задания",
+      "width": 390,
+      "height": 1589,
+      "preview": "design/tasks.png"
+    },
+    "group": {
+      "id": "2:577",
+      "name": "04 Задания группы",
+      "width": 390,
+      "height": 1479,
+      "preview": "design/group.png"
+    },
+    "login": {
+      "id": "2:615",
+      "name": "05 Вход",
+      "width": 390,
+      "height": 673,
+      "preview": "design/login.png"
+    },
+    "profile": {
+      "id": "2:669",
+      "name": "06 Профиль",
+      "width": 390,
+      "height": 1319,
+      "preview": "design/profile.png"
+    }
+  },
+  "previewFont": "Arial",
+  "figmaFont": "Roboto",
+  "verifiedAt": "2026-11-25",
+  "board": {
+    "id": "2:269",
+    "width": 1160,
+    "height": 1571
+  },
+  "fontFamily": "Roboto",
+  "previewSources": {
+    "screens": "Figma PNG export 2x after field layout correction",
+    "system": "Local vector preview with Arial and Android source tokens"
+  },
+  "verification": [
+    "Six native Auto Layout frames at width 390",
+    "Text layers and component instances visible in the editor",
+    "Semantic color and spacing variable bindings visible in the inspector",
+    "All six Figma PNG exports visually reviewed; narrow fields corrected"
+  ],
+  "prototypeStatus": "Navigation specification is documented; complete interactive prototype is not part of the submission"
+}

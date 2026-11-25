@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="750" viewBox="0 0 1500 750"><rect width="100%" height="100%" fill="white"/>
+<text x="40" y="56" font-family="Arial,sans-serif" font-size="32" font-weight="700" fill="#17223B">Компоненты UniFlow Android</text>
+<rect x="40" y="130" width="320" height="100" rx="14" fill="#F5F6FA" stroke="#737B8E" stroke-width="2"/>
+<text x="58" y="170" font-family="Arial,sans-serif" font-size="25" font-weight="700" fill="#17223B">Android</text>
+<text x="58" y="206" font-family="Arial,sans-serif" font-size="20" font-weight="400" fill="#17223B">React Native и Expo</text>
+<rect x="540" y="130" width="320" height="100" rx="14" fill="#F5F6FA" stroke="#737B8E" stroke-width="2"/>
+<text x="558" y="170" font-family="Arial,sans-serif" font-size="25" font-weight="700" fill="#17223B">NestJS REST API</text>
+<text x="558" y="206" font-family="Arial,sans-serif" font-size="20" font-weight="400" fill="#17223B">Контроллеры и сервисы</text>
+<rect x="1040" y="130" width="320" height="100" rx="14" fill="#F5F6FA" stroke="#737B8E" stroke-width="2"/>
+<text x="1058" y="170" font-family="Arial,sans-serif" font-size="25" font-weight="700" fill="#17223B">PostgreSQL</text>
+<text x="1058" y="206" font-family="Arial,sans-serif" font-size="20" font-weight="400" fill="#17223B">Данные и pg-boss</text>
+<rect x="540" y="420" width="320" height="100" rx="14" fill="#F5F6FA" stroke="#737B8E" stroke-width="2"/>
+<text x="558" y="460" font-family="Arial,sans-serif" font-size="25" font-weight="700" fill="#17223B">Worker</text>
+<text x="558" y="496" font-family="Arial,sans-serif" font-size="20" font-weight="400" fill="#17223B">Почта и напоминания</text>
+<rect x="1040" y="420" width="320" height="100" rx="14" fill="#F5F6FA" stroke="#737B8E" stroke-width="2"/>
+<text x="1058" y="460" font-family="Arial,sans-serif" font-size="25" font-weight="700" fill="#17223B">S3 хранилище</text>
+<text x="1058" y="496" font-family="Arial,sans-serif" font-size="20" font-weight="400" fill="#17223B">Закрытый бакет</text>
+<rect x="40" y="420" width="320" height="100" rx="14" fill="#F5F6FA" stroke="#737B8E" stroke-width="2"/>
+<text x="58" y="460" font-family="Arial,sans-serif" font-size="25" font-weight="700" fill="#17223B">SMTP и Push</text>
+<text x="58" y="496" font-family="Arial,sans-serif" font-size="20" font-weight="400" fill="#17223B">Внешние адаптеры</text>
+<polyline points="360,180 540,180" fill="none" stroke="#6554D9" stroke-width="3"/>
+<polygon points="540,180 529.1946347717678,185.21958640933477 529.1946347717678,174.78041359066523" fill="#6554D9"/>
+<text x="393.0078125" y="170.0" font-family="Arial,sans-serif" font-size="20" font-weight="400" fill="#17223B">HTTPS / API</text>
+<polyline points="860,180 1040,180" fill="none" stroke="#6554D9" stroke-width="3"/>
+<polygon points="1040,180 1029.1946347717678,185.21958640933477 1029.1946347717678,174.78041359066523" fill="#6554D9"/>
+<polyline points="860,470 950,470 950,230 1040,230" fill="none" stroke="#6554D9" stroke-width="3"/>
+<polygon points="1040,230 1029.1946347717678,235.21958640933477 1029.1946347717678,224.78041359066523" fill="#6554D9"/>
+<polyline points="860,205 990,205 990,470 1040,470" fill="none" stroke="#6554D9" stroke-width="3"/>
+<polygon points="1040,470 1029.1946347717678,475.21958640933474 1029.1946347717678,464.78041359066526" fill="#6554D9"/>
+<polyline points="860,470 1040,470" fill="none" stroke="#6554D9" stroke-width="3"/>
+<polygon points="1040,470 1029.1946347717678,475.21958640933474 1029.1946347717678,464.78041359066526" fill="#6554D9"/>
+<polyline points="540,470 360,470" fill="none" stroke="#6554D9" stroke-width="3"/>
+<polygon points="360,470 370.8053652282321,464.78041359066526 370.8053652282321,475.21958640933474" fill="#6554D9"/>
+<text x="40" y="675" font-family="Arial,sans-serif" font-size="25" font-weight="400" fill="#17223B">Очередь использует PostgreSQL. API и worker запускаются отдельными процессами.</text>
+</svg>

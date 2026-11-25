@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="1471" viewBox="0 0 390 1471">
+<rect x="0" y="0" width="390" height="1471" rx="0" fill="#F5F6FA" stroke="none"/>
+<rect x="0" y="0" width="390" height="88" rx="0" fill="#FFFFFF" stroke="none"/>
+<text x="20" y="40.5" font-family="Arial,sans-serif" font-size="21" font-weight="800" fill="#6554D9">UniFlow</text>
+<text x="20" y="60.5" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">Пространство для учёбы</text>
+<text x="203" y="46.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#16876C">● На связи</text>
+<text x="287" y="47.0" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="#6554D9">Алексей</text>
+<rect x="20" y="108" width="350" height="46" rx="10" fill="#EFECFC" stroke="none"/>
+<text x="142.0" y="134.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#6554D9">К списку групп</text>
+<text x="20" y="202" font-family="Arial,sans-serif" font-size="30" font-weight="800" fill="#17223B">Проектная группа</text>
+<text x="20" y="233" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#737B8E">Проектирование систем · Владелец</text>
+<text x="20" y="275" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#737B8E">Общие задания и материалы проекта.</text>
+<rect x="20" y="302" width="350" height="46" rx="10" fill="#EFECFC" stroke="none"/>
+<text x="88.0" y="328.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#6554D9">Связать с личным предметом</text>
+<rect x="20" y="366.0" width="169" height="46" rx="10" fill="#EFECFC" stroke="none"/>
+<text x="38.0" y="392.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#6554D9">Настройки группы</text>
+<rect x="201" y="366.0" width="143" height="46" rx="10" fill="#EFECFC" stroke="none"/>
+<text x="219.0" y="392.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#6554D9">Архивировать</text>
+<rect x="20" y="430.0" width="97" height="46" rx="10" fill="#6554D9" stroke="none"/>
+<text x="38.0" y="456.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#FFFFFF">Задания</text>
+<rect x="129" y="430.0" width="120" height="46" rx="10" fill="#EFECFC" stroke="none"/>
+<text x="147.0" y="456.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#6554D9">Материалы</text>
+<rect x="20" y="494.0" width="111" height="46" rx="10" fill="#EFECFC" stroke="none"/>
+<text x="38.0" y="520.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#6554D9">Участники</text>
+<rect x="143" y="494.0" width="134" height="46" rx="10" fill="#EFECFC" stroke="none"/>
+<text x="161.0" y="520.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#6554D9">Приглашения</text>
+<text x="20" y="576" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#17223B">Прогресс общих заданий</text>
+<rect x="20" y="602.0" width="169" height="96" rx="16" fill="#FFFFFF" stroke="#E5E8EF"/>
+<text x="38" y="649.0" font-family="Arial,sans-serif" font-size="29" font-weight="800" fill="#6554D9">3</text>
+<text x="38" y="672.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">Всего заданий</text>
+<rect x="201" y="602.0" width="169" height="96" rx="16" fill="#FFFFFF" stroke="#E5E8EF"/>
+<text x="219" y="649.0" font-family="Arial,sans-serif" font-size="29" font-weight="800" fill="#16876C">1</text>
+<text x="219" y="672.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">Выполнено вовремя</text>
+<rect x="20" y="710.0" width="169" height="96" rx="16" fill="#FFFFFF" stroke="#E5E8EF"/>
+<text x="38" y="757.0" font-family="Arial,sans-serif" font-size="29" font-weight="800" fill="#A77522">0</text>
+<text x="38" y="780.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">С опозданием</text>
+<rect x="201" y="710.0" width="169" height="96" rx="16" fill="#FFFFFF" stroke="#E5E8EF"/>
+<text x="219" y="757.0" font-family="Arial,sans-serif" font-size="29" font-weight="800" fill="#B63E4A">0</text>
+<text x="219" y="780.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">Просрочено</text>
+<text x="20" y="833" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#737B8E">33% завершено · 2 в работе</text>
+<rect x="20" y="860" width="350" height="46" rx="10" fill="#6554D9" stroke="none"/>
+<text x="101.0" y="886.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#FFFFFF">Добавить задание группы</text>
+<rect x="20" y="924.0" width="102" height="46" rx="10" fill="#6554D9" stroke="none"/>
+<text x="38.0" y="950.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#FFFFFF">В работе</text>
+<rect x="134" y="924.0" width="64" height="46" rx="10" fill="#EFECFC" stroke="none"/>
+<text x="152.0" y="950.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#6554D9">Все</text>
+<rect x="210" y="924.0" width="138" height="46" rx="10" fill="#EFECFC" stroke="none"/>
+<text x="228.0" y="950.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#6554D9">Выполненные</text>
+<rect x="20" y="988" width="350" height="388" rx="20" fill="#FFFFFF" stroke="#E5E8EF"/>
+<text x="44" y="1030" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#17223B">Общий отчёт команды</text>
+<text x="44" y="1069" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="#6554D9">Общее выполнение · Автор: Алексей</text>
+<text x="44" y="1109" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#737B8E">26 нояб., 18:00 · В работе</text>
+<text x="44" y="1151" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#17223B">Подготовить итоговый отчёт по проекту.</text>
+<rect x="44" y="1178" width="302" height="46" rx="10" fill="#6554D9" stroke="none"/>
+<text x="107.5" y="1204.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#FFFFFF">Отметить выполненным</text>
+<rect x="44" y="1242.0" width="98" height="46" rx="10" fill="#EFECFC" stroke="none"/>
+<text x="62.0" y="1268.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#6554D9">История</text>
+<rect x="154" y="1242.0" width="109" height="46" rx="10" fill="#EFECFC" stroke="none"/>
+<text x="172.0" y="1268.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#6554D9">Вложения</text>
+<rect x="44" y="1306.0" width="106" height="46" rx="10" fill="#EFECFC" stroke="none"/>
+<text x="62.0" y="1332.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#6554D9">Изменить</text>
+<rect x="162" y="1306.0" width="98" height="46" rx="10" fill="#EFECFC" stroke="none"/>
+<text x="180.0" y="1332.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#6554D9">Удалить</text>
+<rect x="0" y="1396" width="390" height="75" rx="0" fill="#FFFFFF" stroke="#E5E8EF"/>
+<text x="40.0" y="1427.0" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#737B8E">◷</text>
+<text x="23.0" y="1450.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">Сегодня</text>
+<text x="134.0" y="1427.0" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#737B8E">▦</text>
+<text x="106.5" y="1450.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">Расписание</text>
+<text x="228.0" y="1427.0" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#737B8E">☑</text>
+<text x="210.5" y="1450.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">Задания</text>
+<rect x="288" y="1402.0" width="84" height="63" rx="10" fill="#EFECFC" stroke="none"/>
+<text x="322.0" y="1427.0" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#6554D9">◎</text>
+<text x="307.5" y="1450.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#6554D9">Группы</text>
+</svg>

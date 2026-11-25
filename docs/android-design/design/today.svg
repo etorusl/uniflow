@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="993" viewBox="0 0 390 993">
+<rect x="0" y="0" width="390" height="993" rx="0" fill="#F5F6FA" stroke="none"/>
+<rect x="0" y="0" width="390" height="88" rx="0" fill="#FFFFFF" stroke="none"/>
+<text x="20" y="40.5" font-family="Arial,sans-serif" font-size="21" font-weight="800" fill="#6554D9">UniFlow</text>
+<text x="20" y="60.5" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">Пространство для учёбы</text>
+<text x="203" y="46.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#16876C">● На связи</text>
+<text x="287" y="47.0" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="#6554D9">Алексей</text>
+<text x="20" y="138" font-family="Arial,sans-serif" font-size="30" font-weight="800" fill="#17223B">Ваш день, Алексей</text>
+<text x="20" y="169" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#737B8E">среда, 25 ноября</text>
+<rect x="20" y="196" width="350" height="46" rx="10" fill="#EFECFC" stroke="none"/>
+<text x="38" y="222.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#6554D9">+ Добавить задание</text>
+<text x="20" y="274.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#6554D9">Предметы и преподаватели</text>
+<text x="233" y="274.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#6554D9">Расписание →</text>
+<rect x="20" y="300.0" width="169" height="96" rx="16" fill="#FFFFFF" stroke="#E5E8EF"/>
+<text x="38" y="347.0" font-family="Arial,sans-serif" font-size="29" font-weight="800" fill="#6554D9">12</text>
+<text x="38" y="370.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">Всего заданий</text>
+<rect x="201" y="300.0" width="169" height="96" rx="16" fill="#FFFFFF" stroke="#E5E8EF"/>
+<text x="219" y="347.0" font-family="Arial,sans-serif" font-size="29" font-weight="800" fill="#16876C">7</text>
+<text x="219" y="370.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">Выполнено вовремя</text>
+<rect x="20" y="408.0" width="169" height="96" rx="16" fill="#FFFFFF" stroke="#E5E8EF"/>
+<text x="38" y="455.0" font-family="Arial,sans-serif" font-size="29" font-weight="800" fill="#A77522">1</text>
+<text x="38" y="478.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">С опозданием</text>
+<rect x="201" y="408.0" width="169" height="96" rx="16" fill="#FFFFFF" stroke="#E5E8EF"/>
+<text x="219" y="455.0" font-family="Arial,sans-serif" font-size="29" font-weight="800" fill="#B63E4A">1</text>
+<text x="219" y="478.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">Просрочено</text>
+<text x="20" y="531" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#737B8E">67% завершено · 4 в работе</text>
+<text x="20" y="576" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#17223B">Сегодня в расписании</text>
+<rect x="20" y="602" width="350" height="130" rx="20" fill="#FFFFFF" stroke="#E5E8EF"/>
+<text x="44" y="639" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="#6554D9">09:00–10:30</text>
+<text x="44" y="670" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#17223B">Базы данных</text>
+<text x="44" y="699" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#737B8E">А. Иванов · Ауд. 304</text>
+<text x="20" y="768" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#17223B">Ближайшие дедлайны</text>
+<rect x="20" y="794" width="350" height="104" rx="20" fill="#FFFFFF" stroke="#E5E8EF"/>
+<text x="44" y="836" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#17223B">Лабораторная работа № 3</text>
+<text x="44" y="865" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#737B8E">25 нояб., 18:00 · Базы данных</text>
+<rect x="0" y="918" width="390" height="75" rx="0" fill="#FFFFFF" stroke="#E5E8EF"/>
+<rect x="6" y="924.0" width="84" height="63" rx="10" fill="#EFECFC" stroke="none"/>
+<text x="40.0" y="949.0" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#6554D9">◷</text>
+<text x="23.0" y="972.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#6554D9">Сегодня</text>
+<text x="134.0" y="949.0" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#737B8E">▦</text>
+<text x="106.5" y="972.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">Расписание</text>
+<text x="228.0" y="949.0" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#737B8E">☑</text>
+<text x="210.5" y="972.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">Задания</text>
+<text x="322.0" y="949.0" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#737B8E">◎</text>
+<text x="307.5" y="972.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">Группы</text>
+</svg>

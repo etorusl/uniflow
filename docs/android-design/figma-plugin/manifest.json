@@ -1,0 +1,15 @@
+{
+  "name": "UniFlow Android Design Import",
+  "id": "uniflow-android-design-local",
+  "api": "1.0.0",
+  "main": "code.js",
+  "editorType": [
+    "figma"
+  ],
+  "documentAccess": "dynamic-page",
+  "networkAccess": {
+    "allowedDomains": [
+      "none"
+    ]
+  }
+}

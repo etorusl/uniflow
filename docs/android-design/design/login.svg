@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="665" viewBox="0 0 390 665">
+<rect x="0" y="0" width="390" height="665" rx="0" fill="#F5F6FA" stroke="none"/>
+<rect x="0" y="0" width="390" height="88" rx="0" fill="#FFFFFF" stroke="none"/>
+<text x="20" y="40.5" font-family="Arial,sans-serif" font-size="21" font-weight="800" fill="#6554D9">UniFlow</text>
+<text x="20" y="60.5" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">Пространство для учёбы</text>
+<text x="203" y="46.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#16876C">● На связи</text>
+<text x="287" y="47.0" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="#6554D9">Войти</text>
+<rect x="20" y="108" width="350" height="462" rx="20" fill="#FFFFFF" stroke="#E5E8EF"/>
+<text x="44" y="162" font-family="Arial,sans-serif" font-size="30" font-weight="800" fill="#17223B">Рады видеть вас</text>
+<text x="44" y="205" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#737B8E">Расписание и задания ждут вас в UniFlow.</text>
+<text x="44" y="245" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="#17223B">Email</text>
+<rect x="44" y="260" width="302" height="48" rx="10" fill="#FFFFFF" stroke="#E5E8EF"/>
+<text x="57" y="287" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#17223B">student@example.com</text>
+<text x="44" y="339" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="#17223B">Пароль</text>
+<rect x="44" y="354" width="302" height="48" rx="10" fill="#FFFFFF" stroke="#E5E8EF"/>
+<text x="57" y="381" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#17223B">••••••••••••</text>
+<rect x="44" y="420" width="302" height="46" rx="10" fill="#6554D9" stroke="none"/>
+<text x="62" y="446.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#FFFFFF">Войти</text>
+<text x="44" y="498.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#6554D9">Вход</text>
+<text x="94" y="498.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#6554D9">Регистрация</text>
+<text x="44" y="538" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#6554D9">Забыли пароль?</text>
+<rect x="0" y="590" width="390" height="75" rx="0" fill="#FFFFFF" stroke="#E5E8EF"/>
+<text x="40.0" y="621.0" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#737B8E">◷</text>
+<text x="23.0" y="644.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">Сегодня</text>
+<text x="134.0" y="621.0" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#737B8E">▦</text>
+<text x="106.5" y="644.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">Расписание</text>
+<text x="228.0" y="621.0" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#737B8E">☑</text>
+<text x="210.5" y="644.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">Задания</text>
+<text x="322.0" y="621.0" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#737B8E">◎</text>
+<text x="307.5" y="644.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">Группы</text>
+</svg>

@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1160" height="1565" viewBox="0 0 1160 1565">
+<rect x="0" y="0" width="1160" height="1565" rx="0" fill="#F5F6FA" stroke="none"/>
+<text x="40" y="70" font-family="Arial,sans-serif" font-size="30" font-weight="800" fill="#17223B">UniFlow Android</text>
+<text x="40" y="119" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#737B8E">Цвета, типографика, геометрия и компоненты приложения</text>
+<text x="40" y="170" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#17223B">01 Цвета</text>
+<rect x="40" y="202.0" width="166" height="54" rx="10" fill="#F5F6FA" stroke="none"/>
+<text x="40" y="275.0" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="#17223B">background</text>
+<text x="40" y="300.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">#F5F6FA</text>
+<rect x="218" y="202.0" width="166" height="54" rx="10" fill="#FFFFFF" stroke="none"/>
+<text x="218" y="275.0" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="#17223B">surface</text>
+<text x="218" y="300.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">#FFFFFF</text>
+<rect x="396" y="202.0" width="166" height="54" rx="10" fill="#17223B" stroke="none"/>
+<text x="396" y="275.0" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="#17223B">ink</text>
+<text x="396" y="300.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">#17223B</text>
+<rect x="574" y="202.0" width="166" height="54" rx="10" fill="#737B8E" stroke="none"/>
+<text x="574" y="275.0" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="#17223B">muted</text>
+<text x="574" y="300.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">#737B8E</text>
+<rect x="752" y="202.0" width="166" height="54" rx="10" fill="#E5E8EF" stroke="none"/>
+<text x="752" y="275.0" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="#17223B">border</text>
+<text x="752" y="300.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">#E5E8EF</text>
+<rect x="930" y="202.0" width="166" height="54" rx="10" fill="#6554D9" stroke="none"/>
+<text x="930" y="275.0" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="#17223B">primary</text>
+<text x="930" y="300.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">#6554D9</text>
+<rect x="40" y="332.0" width="166" height="54" rx="10" fill="#EFECFC" stroke="none"/>
+<text x="40" y="405.0" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="#17223B">primarySoft</text>
+<text x="40" y="430.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">#EFECFC</text>
+<rect x="218" y="332.0" width="166" height="54" rx="10" fill="#16876C" stroke="none"/>
+<text x="218" y="405.0" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="#17223B">green</text>
+<text x="218" y="430.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">#16876C</text>
+<rect x="396" y="332.0" width="166" height="54" rx="10" fill="#E7F5EE" stroke="none"/>
+<text x="396" y="405.0" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="#17223B">greenSoft</text>
+<text x="396" y="430.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">#E7F5EE</text>
+<rect x="574" y="332.0" width="166" height="54" rx="10" fill="#B63E4A" stroke="none"/>
+<text x="574" y="405.0" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="#17223B">danger</text>
+<text x="574" y="430.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">#B63E4A</text>
+<rect x="752" y="332.0" width="166" height="54" rx="10" fill="#FFF0EF" stroke="none"/>
+<text x="752" y="405.0" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="#17223B">dangerSoft</text>
+<text x="752" y="430.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">#FFF0EF</text>
+<rect x="930" y="332.0" width="166" height="54" rx="10" fill="#A77522" stroke="none"/>
+<text x="930" y="405.0" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="#17223B">amber</text>
+<text x="930" y="430.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">#A77522</text>
+<text x="40" y="480" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#17223B">02 Типографика</text>
+<text x="40" y="527" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#737B8E">Roboto — системный шрифт Android</text>
+<text x="40" y="603.0" font-family="Arial,sans-serif" font-size="30" font-weight="800" fill="#17223B">Заголовок экрана 30 / 40</text>
+<text x="40" y="643.0" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#17223B">Заголовок раздела 18 / 26</text>
+<text x="612" y="575.0" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#17223B">Основной текст 15 / 24</text>
+<text x="612" y="604.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#17223B">Кнопка 14 / 22</text>
+<text x="612" y="631.0" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="#17223B">Подпись 13 / 20</text>
+<text x="612" y="656.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#17223B">Пояснение 12 / 20</text>
+<text x="40" y="706" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#17223B">03 Геометрия</text>
+<text x="40" y="753" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#17223B">Ширина телефона 390 dp · поля страницы 20 · шапка 88 · карточка 24 / R20</text>
+<text x="40" y="801" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#17223B">Кнопки ≥ 46 · поля ≥ 46 · радиусы 3, 10, 12, 16, 20 · сетка статистики 2×2</text>
+<text x="40" y="849" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#17223B">Отступы: 4, 6, 8, 10, 12, 13, 14, 16, 18, 20, 24, 26, 32, 40 dp</text>
+<text x="40" y="900" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#17223B">04 Компоненты и состояния</text>
+<rect x="40" y="932.0" width="115" height="46" rx="10" fill="#6554D9" stroke="none"/>
+<text x="58.0" y="958.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#FFFFFF">Сохранить</text>
+<rect x="167" y="932.0" width="115" height="46" rx="10" fill="#6554D9" stroke="none"/>
+<text x="185.0" y="958.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#FFFFFF">Сохранить</text>
+<rect x="294" y="932.0" width="137" height="46" rx="10" fill="#6554D9" stroke="none"/>
+<text x="312.0" y="958.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#FFFFFF">Сохранение…</text>
+<rect x="443" y="932.0" width="90" height="46" rx="10" fill="#EFECFC" stroke="none"/>
+<text x="461.0" y="958.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#6554D9">Отмена</text>
+<text x="40" y="1015.0" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="#17223B">Email</text>
+<rect x="40" y="1030.0" width="350" height="48" rx="10" fill="#FFFFFF" stroke="#E5E8EF"/>
+<text x="53" y="1057.0" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#17223B">student@example.com</text>
+<text x="402" y="1015.0" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="#17223B">Часовой пояс</text>
+<rect x="402" y="1030.0" width="350" height="48" rx="10" fill="#FFFFFF" stroke="#E5E8EF"/>
+<text x="415" y="1057.0" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#17223B">Asia/Novosibirsk</text>
+<rect x="40" y="1127.0" width="350" height="130" rx="20" fill="#FFFFFF" stroke="#E5E8EF"/>
+<text x="64" y="1164.0" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="#6554D9">09:00–10:30</text>
+<text x="64" y="1195.0" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#17223B">Базы данных</text>
+<text x="64" y="1224.0" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#737B8E">А. Иванов · Ауд. 304</text>
+<rect x="402" y="1140.0" width="350" height="104" rx="20" fill="#FFFFFF" stroke="#E5E8EF"/>
+<text x="426" y="1182.0" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#17223B">Лабораторная работа № 3</text>
+<text x="426" y="1211.0" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#737B8E">25 нояб., 18:00 · Базы данных</text>
+<rect x="764" y="1102.0" width="350" height="180" rx="20" fill="#FFFFFF" stroke="#E5E8EF"/>
+<text x="788" y="1144.0" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#17223B">Заданий пока нет</text>
+<text x="788" y="1185.0" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#737B8E">Добавьте первое задание с дедлайном.</text>
+<rect x="788" y="1212.0" width="302" height="46" rx="10" fill="#6554D9" stroke="none"/>
+<text x="872.5" y="1238.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#FFFFFF">Добавить задание</text>
+<rect x="40" y="1306.0" width="350" height="76" rx="10" fill="#FFF0EF" stroke="none"/>
+<text x="54" y="1335.0" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#B63E4A">Не удалось сохранить. Проверьте</text>
+<text x="54" y="1359.0" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#B63E4A">соединение и повторите попытку.</text>
+<rect x="402" y="1318.0" width="350" height="52" rx="10" fill="#E7F5EE" stroke="none"/>
+<text x="416" y="1347.0" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#16876C">Профиль сохранён.</text>
+<rect x="40" y="1406" width="390" height="75" rx="0" fill="#FFFFFF" stroke="#E5E8EF"/>
+<rect x="46" y="1412.0" width="84" height="63" rx="10" fill="#EFECFC" stroke="none"/>
+<text x="80.0" y="1437.0" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#6554D9">◷</text>
+<text x="63.0" y="1460.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#6554D9">Сегодня</text>
+<text x="174.0" y="1437.0" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#737B8E">▦</text>
+<text x="146.5" y="1460.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">Расписание</text>
+<text x="268.0" y="1437.0" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#737B8E">☑</text>
+<text x="250.5" y="1460.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">Задания</text>
+<text x="362.0" y="1437.0" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#737B8E">◎</text>
+<text x="347.5" y="1460.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">Группы</text>
+<text x="40" y="1517" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">Источники: theme.ts, forms.tsx, app-shell.tsx, statistics-cards.tsx. Светлая тема.</text>
+</svg>

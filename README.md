@@ -342,3 +342,5 @@ GitHub Actions проверяет установку по lockfile, миграц
 - [pg-boss](https://github.com/timgit/pg-boss)
 - [SeaweedFS](https://github.com/seaweedfs/seaweedfs)
 - [Mailpit](https://mailpit.axllent.org/)
+
+[Самостоятельный комплект проектирования Android](docs/android-design/README.md) — 36 сценариев, дизайн-система и шесть экранов Figma, API и отчёт Word/PDF.

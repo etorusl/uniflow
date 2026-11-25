@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="1305" viewBox="0 0 390 1305">
+<rect x="0" y="0" width="390" height="1305" rx="0" fill="#F5F6FA" stroke="none"/>
+<rect x="0" y="0" width="390" height="88" rx="0" fill="#FFFFFF" stroke="none"/>
+<text x="20" y="40.5" font-family="Arial,sans-serif" font-size="21" font-weight="800" fill="#6554D9">UniFlow</text>
+<text x="20" y="60.5" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">Пространство для учёбы</text>
+<text x="203" y="46.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#16876C">● На связи</text>
+<text x="287" y="47.0" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="#6554D9">Алексей</text>
+<rect x="20" y="108" width="350" height="446" rx="20" fill="#FFFFFF" stroke="#E5E8EF"/>
+<text x="44" y="162" font-family="Arial,sans-serif" font-size="30" font-weight="800" fill="#17223B">Мой профиль</text>
+<text x="44" y="205" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#737B8E">student@example.com</text>
+<text x="44" y="245" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="#17223B">Ваше имя</text>
+<rect x="44" y="260" width="302" height="48" rx="10" fill="#FFFFFF" stroke="#E5E8EF"/>
+<text x="57" y="287" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#17223B">Алексей</text>
+<text x="44" y="339" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="#17223B">Часовой пояс</text>
+<rect x="44" y="354" width="302" height="48" rx="10" fill="#FFFFFF" stroke="#E5E8EF"/>
+<text x="57" y="381" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#17223B">Asia/Novosibirsk</text>
+<rect x="44" y="420" width="302" height="46" rx="10" fill="#6554D9" stroke="none"/>
+<text x="121.0" y="446.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#FFFFFF">Сохранить профиль</text>
+<rect x="44" y="484" width="302" height="46" rx="10" fill="#EFECFC" stroke="none"/>
+<text x="62" y="510.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#6554D9">Выйти из аккаунта</text>
+<rect x="20" y="572" width="350" height="400" rx="20" fill="#FFFFFF" stroke="#E5E8EF"/>
+<text x="44" y="614" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#17223B">Напоминания</text>
+<text x="44" y="655" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#737B8E">Входящие работают при подключении к</text>
+<text x="44" y="679" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#737B8E">API.</text>
+<rect x="44" y="706" width="302" height="46" rx="10" fill="#6554D9" stroke="none"/>
+<text x="110.0" y="732.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#FFFFFF">Включить напоминания</text>
+<text x="44" y="783" font-family="Arial,sans-serif" font-size="13" font-weight="600" fill="#17223B">За сколько минут</text>
+<rect x="44" y="798" width="302" height="48" rx="10" fill="#FFFFFF" stroke="#E5E8EF"/>
+<text x="57" y="825" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#17223B">60</text>
+<rect x="44" y="864" width="302" height="46" rx="10" fill="#6554D9" stroke="none"/>
+<text x="116.5" y="890.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#FFFFFF">Сохранить настройки</text>
+<text x="44" y="940" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">FCM не настроен на сервере.</text>
+<rect x="20" y="990" width="350" height="220" rx="20" fill="#FFFFFF" stroke="#E5E8EF"/>
+<text x="44" y="1032" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#17223B">Входящие напоминания</text>
+<text x="44" y="1072" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#17223B">Лабораторная работа № 3</text>
+<text x="44" y="1113" font-family="Arial,sans-serif" font-size="15" font-weight="400" fill="#737B8E">25 нояб., 18:00 · Базы данных</text>
+<rect x="44" y="1140" width="302" height="46" rx="10" fill="#6554D9" stroke="none"/>
+<text x="62" y="1166.0" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#FFFFFF">Открыть задание</text>
+<rect x="0" y="1230" width="390" height="75" rx="0" fill="#FFFFFF" stroke="#E5E8EF"/>
+<text x="40.0" y="1261.0" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#737B8E">◷</text>
+<text x="23.0" y="1284.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">Сегодня</text>
+<text x="134.0" y="1261.0" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#737B8E">▦</text>
+<text x="106.5" y="1284.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">Расписание</text>
+<text x="228.0" y="1261.0" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#737B8E">☑</text>
+<text x="210.5" y="1284.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">Задания</text>
+<text x="322.0" y="1261.0" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#737B8E">◎</text>
+<text x="307.5" y="1284.0" font-family="Arial,sans-serif" font-size="12" font-weight="400" fill="#737B8E">Группы</text>
+</svg>
