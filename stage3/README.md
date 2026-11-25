@@ -19,4 +19,4 @@ OpenAPI описывает Android-представление серверног
 
 ## Figma
 
-[Экран Сегодня на Android](https://www.figma.com/design/xhrjwC2FwiIhOd8yTNtP58?node-id=4-572)
+[Экран Сегодня на Android](https://www.figma.com/design/G5td2BUaPyTcOFqbkGbQQR/UniFlow-Android-%E2%80%94-%D0%B4%D0%B8%D0%B7%D0%B0%D0%B9%D0%BD-%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0-%D0%B8-%D1%8D%D0%BA%D1%80%D0%B0%D0%BD%D1%8B?node-id=2-270&t=9RH64X0eQ2uKdiXG-1)
